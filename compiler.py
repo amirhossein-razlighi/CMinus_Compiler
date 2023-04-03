@@ -61,10 +61,11 @@ def get_unclosed_comment_message():
     message = "/*"
     char = get_next_char()
     counter = 5
-    while char and counter > 0:
+    while counter > 0:
         message += char
         char = get_next_char()
         counter -= 1
+    file.seek(-5, os.SEEK_CUR)
     return message
 
 
@@ -180,25 +181,24 @@ def get_next_token():
             break
         # detect comment
         if char == '/':
+            error_message = ''
             char = get_next_char()
             if is_eof(char):
                 return ('Error', 'Invalid input', line_number, '/')
             elif char == '*':
+                error_message = get_unclosed_comment_message() + '...'
                 char = get_next_char()
                 if is_eof(char):
-                    error_message = get_unclosed_comment_message()
                     return ('Error', 'Unclosed comment', line_number, error_message)
                 while char:
                     if char == '*':
                         char = get_next_char()
                         if is_eof(char):
-                            error_message = get_unclosed_comment_message()
                             return ('Error', 'Unclosed comment', line_number, error_message)
                         if char == '/':
                             return get_next_token()
                     char = get_next_char()
                     if is_eof(char):
-                        error_message = get_unclosed_comment_message()
                         return ('Error', 'Unclosed comment', line_number, error_message)
             if char == '\n':
                 line_number += 1
