@@ -85,6 +85,7 @@ def get_next_token():
                 token_type = 'NUM'
                 break
             if is_letter(char):
+                lexeme += char
                 return ('Error', 'Invalid number', line_number, lexeme)
             while is_digit(char):
                 lexeme += char
@@ -93,6 +94,7 @@ def get_next_token():
                     token_type = 'NUM'
                     break
                 if is_letter(char):
+                    lexeme += char
                     return ('Error', 'Invalid number', line_number, lexeme)
             file.seek(- 1, os.SEEK_CUR)
             token_type = 'NUM'
@@ -112,7 +114,7 @@ def get_next_token():
                 return ('Error', 'Invalid input', line_number, lexeme)
             if not is_letter(char) and not is_digit(char):
                 file.seek(-1, os.SEEK_CUR)
-                
+
             while is_letter(char) or is_digit(char):
                 lexeme += char
                 char = get_next_char()
@@ -174,7 +176,7 @@ def get_next_token():
             char = get_next_char()
             if is_eof(char):
                 return ('Error', 'Invalid input', line_number, '/')
-            if char == '*':
+            elif char == '*':
                 char = get_next_char()
                 if is_eof(char):
                     return ('Error', 'Unclosed comment', line_number, '/*')
@@ -192,8 +194,11 @@ def get_next_token():
                         line_number += 1
                 continue
             # check for EOF
-            if char == '':
+            elif char == '':
                 break
+            else:
+                file.seek(-1, os.SEEK_CUR)
+                return ('Error', 'Invalid input', line_number, '/')
         else:
             # file.seek(-1, os.SEEK_CUR)
             return ('Error', 'Invalid input', line_number, char)
