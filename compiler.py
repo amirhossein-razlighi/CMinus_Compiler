@@ -96,7 +96,8 @@ def get_next_token():
                 if is_letter(char):
                     lexeme += char
                     return ('Error', 'Invalid number', line_number, lexeme)
-            file.seek(- 1, os.SEEK_CUR)
+            if not is_eof(char):
+                file.seek(-1, os.SEEK_CUR)
             token_type = 'NUM'
             break
         # detect identifier and keyword
@@ -143,6 +144,9 @@ def get_next_token():
                 break
             if char == '/':
                 return ('Error', 'Unmatched comment', line_number, '*/')
+            elif char == '#':
+                lexeme += char
+                return ('Error', 'Invalid input', line_number, '*' + lexeme)
             else:
                 file.seek(-1, os.SEEK_CUR)
                 lexeme += '*'
@@ -163,6 +167,9 @@ def get_next_token():
             if char == '=':
                 lexeme += char
                 token_type = 'SYMBOL'
+            elif char == '#':
+                lexeme += char
+                return ('Error', 'Invalid input', line_number, lexeme)
             else:
                 file.seek(-1, os.SEEK_CUR)
                 token_type = 'SYMBOL'
@@ -188,12 +195,15 @@ def get_next_token():
                     char = get_next_char()
                     if is_eof(char):
                         return ('Error', 'Unclosed comment', line_number, error_message)
-            if char == '\n':
+            elif char == '\n':
                 line_number += 1
-                continue
+                return ('Error', 'Invalid input', line_number - 1, '/')
             # check for EOF
             elif char == '':
                 break
+            elif char == '#':
+                lexeme += char
+                return ('Error', 'Invalid input', line_number, '/' + lexeme)
             else:
                 file.seek(-1, os.SEEK_CUR)
                 return ('Error', 'Invalid input', line_number, '/')
@@ -213,6 +223,7 @@ def save_tokens_to_file(tokens):
                 current_line_number = token[2]
                 f.write(str(current_line_number) + '.' + '\t')
             f.write('(' + token[0] + ', ' + token[1] + ') ')
+        f.write('\n')
 
 
 def save_to_errors_file(errors):
@@ -225,6 +236,10 @@ def save_to_errors_file(errors):
                 current_line_number = error[2]
                 f.write(str(current_line_number) + '.' + '\t')
             f.write('(' + error[-1] + ', ' + error[1] + ') ')
+        if len(errors) == 0:
+            f.write('There is no lexical error.')
+        else:
+            f.write('\n')
 
 
 def save_to_symbols_file(symbol_table):
@@ -243,6 +258,7 @@ def save_to_symbols_file(symbol_table):
             else:
                 f.write(str(counter) + '.' + '\t' + identifier)
             counter += 1
+        f.write('\n')
 
 
 def main():
