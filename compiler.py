@@ -23,7 +23,7 @@ def is_digit(char):
 
 def is_whitespace(char):
     global line_number
-    matched = re.match(r'[ \t \f \r \v]', char)
+    matched = re.match(r'(\s|\t|\v|\f|\r)', char)
     if char == '\n':
         line_number += 1
         return True
@@ -69,23 +69,22 @@ def get_next_token():
         if type(char) is not str:
             char = char.decode('utf-8')
         if is_eof(char):
-            print('EOF')
-            break
+            return None
         # skip white space (whitespace, \n, \t, \f, \r, \v)
         if is_whitespace(char):
+            # print('whitespace')
             char = get_next_char()
             continue
+        # detect number
         if is_digit(char):
+            # print('digit')
             lexeme += char
             char = get_next_char()
             if is_eof(char):
                 token_type = 'NUM'
                 break
             if is_letter(char):
-                print('Error: invalid token')
-                print(f'char is {char} ')
-                print('IN DIGIT')
-                return None
+                return ('Error', 'Invalid number', line_number, lexeme)
             while is_digit(char):
                 lexeme += char
                 char = get_next_char()
@@ -93,14 +92,13 @@ def get_next_token():
                     token_type = 'NUM'
                     break
                 if is_letter(char):
-                    print('Error: invalid token')
-                    print(f'char is {char} ')
-                    print('IN DIGIT')
-                    return None
+                    return ('Error', 'Invalid number', line_number, lexeme)
             file.seek(- 1, os.SEEK_CUR)
             token_type = 'NUM'
             break
+        # detect identifier and keyword
         if is_letter(char):
+            # print('letter')
             lexeme += char
             char = get_next_char()
             if is_eof(char):
@@ -109,12 +107,9 @@ def get_next_token():
                 else:
                     token_type = 'ID'
                 break
-            if not (is_letter(char) or is_digit(char) or is_whitespace(char)):
-                print('Error: invalid token')
-                print(f'char is {char} ')
-                print('IN LETTER')
+            if not (is_letter(char) or is_digit(char) or is_whitespace(char) or is_symbol_except_equal(char) or char == '='):
                 file.seek(-1, os.SEEK_CUR)
-                return None
+                return ('Error', 'Invalid input', line_number, lexeme)
             while is_letter(char) or is_digit(char):
                 lexeme += char
                 char = get_next_char()
@@ -124,22 +119,41 @@ def get_next_token():
                     else:
                         token_type = 'ID'
                     break
-                if not (is_letter(char) or is_digit(char) or is_whitespace(char)):
-                    print('Error: invalid token')
-                    print(f'char is {char} ')
-                    print('IN LETTER2')
+                if not (is_letter(char) or is_digit(char) or is_whitespace(char) or is_symbol_except_equal(char) or char == '='):
+                    lexeme += char
+                    # file.seek(-1, os.SEEK_CUR)
+                    return ('Error', 'Invalid input', line_number, lexeme)
+                if not is_letter(char) and not is_digit(char):
                     file.seek(-1, os.SEEK_CUR)
-                    return None
             if is_keyword(lexeme):
                 token_type = 'KEYWORD'
             else:
                 token_type = 'ID'
             break
+        # detect unmatched comment
+        if char == '*':
+            # print('Unmatched comment...')
+            char = get_next_char()
+            if is_eof(char):
+                lexeme += '*'
+                token_type = 'SYMBOL'
+                break
+            if char == '/':
+                return ('Error', 'Unmatched comment', line_number, '*/')
+            else:
+                file.seek(-1, os.SEEK_CUR)
+                lexeme += '*'
+                token_type = 'SYMBOL'
+                break
+        # detect symbol - {=, ==}
         if is_symbol_except_equal(char):
+            # print('symbol')
             lexeme += char
             token_type = 'SYMBOL'
             break
+        # detect = and ==
         if char == '=':
+            # print('== or =')
             lexeme += char
             char = get_next_char()
             if is_eof(char):
@@ -149,49 +163,36 @@ def get_next_token():
                 lexeme += char
                 token_type = 'SYMBOL'
             else:
-                file.seek(- 1, os.SEEK_CUR)
+                file.seek(-1, os.SEEK_CUR)
                 token_type = 'SYMBOL'
             break
+        # detect comment
         if char == '/':
-            # detect comment
             char = get_next_char()
             if is_eof(char):
-                print('Error: invalid token')
-                print(f'char is {char} ')
-                print('IN COMMENT')
-                return None
+                return ('Error', 'Invalid input', line_number, '/')
             if char == '*':
                 char = get_next_char()
                 if is_eof(char):
-                    print('Error: invalid token')
-                    print(f'char is {char} ')
-                    print('IN COMMENT')
-                    return None
+                    return ('Error', 'Unclosed comment', line_number, '/*')
                 while char:
                     if char == '*':
                         char = get_next_char()
                         if is_eof(char):
-                            print('Error: invalid token')
-                            print(f'char is {char} ')
-                            print('IN COMMENT')
-                            return None
+                            return ('Error', 'Unclosed comment', line_number, '/*')
                         if char == '/':
-                            continue
+                            return get_next_char()
                     char = get_next_char()
                     if is_eof(char):
-                        print('Error: invalid token')
-                        print(f'char is {char} ')
-                        print('IN COMMENT')
-                        return None
+                        return ('Error', 'Unclosed comment', line_number, '/*')
                 continue
+            # check for EOF
             if char == '':
-                continue
-            else:
-                file.seek(-1, os.SEEK_CUR)
-                print('Error: invalid token')
-                print(f'char is {char} ')
-                print('IN /')
-                return None
+                break
+        else:
+            # file.seek(-1, os.SEEK_CUR)
+            return ('Error', 'Invalid input', line_number, char)
+
     return token_type, lexeme
 
 
