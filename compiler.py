@@ -60,6 +60,7 @@ def get_next_char():
 
 def get_next_token():
     global file
+    global line_number
     token_type = None
     lexeme = ''
 
@@ -181,10 +182,12 @@ def get_next_token():
                         if is_eof(char):
                             return ('Error', 'Unclosed comment', line_number, '/*')
                         if char == '/':
-                            return get_next_char()
+                            return get_next_token()
                     char = get_next_char()
                     if is_eof(char):
                         return ('Error', 'Unclosed comment', line_number, '/*')
+                    if char == '\n':
+                        line_number += 1
                 continue
             # check for EOF
             if char == '':
@@ -193,7 +196,7 @@ def get_next_token():
             # file.seek(-1, os.SEEK_CUR)
             return ('Error', 'Invalid input', line_number, char)
 
-    return token_type, lexeme
+    return token_type, lexeme, line_number
 
 
 if __name__ == '__main__':
