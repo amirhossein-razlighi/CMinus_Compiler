@@ -56,6 +56,18 @@ def get_next_char():
     return char
 
 
+def get_unclosed_comment_message():
+    global file
+    message = "/*"
+    char = get_next_char()
+    counter = 5
+    while char and counter > 0:
+        message += char
+        char = get_next_char()
+        counter -= 1
+    return message
+
+
 def get_next_token():
     global file
     global line_number
@@ -174,17 +186,20 @@ def get_next_token():
             elif char == '*':
                 char = get_next_char()
                 if is_eof(char):
-                    return ('Error', 'Unclosed comment', line_number, '/*')
+                    error_message = get_unclosed_comment_message()
+                    return ('Error', 'Unclosed comment', line_number, error_message)
                 while char:
                     if char == '*':
                         char = get_next_char()
                         if is_eof(char):
-                            return ('Error', 'Unclosed comment', line_number, '/*')
+                            error_message = get_unclosed_comment_message()
+                            return ('Error', 'Unclosed comment', line_number, error_message)
                         if char == '/':
                             return get_next_token()
                     char = get_next_char()
                     if is_eof(char):
-                        return ('Error', 'Unclosed comment', line_number, '/*')
+                        error_message = get_unclosed_comment_message()
+                        return ('Error', 'Unclosed comment', line_number, error_message)
             if char == '\n':
                 line_number += 1
                 continue
