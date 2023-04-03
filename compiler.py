@@ -23,10 +23,10 @@ def is_digit(char):
 
 def is_whitespace(char):
     global line_number
-    matched = re.match(r'(\s|\t|\v|\f|\r)', char)
-    if char == '\n':
-        line_number += 1
-        return True
+    matched = re.match(r'(\s|\t|\v|\f|\r|\n)', char)
+    # if char == '\n':
+    #     line_number += 1
+    #     return True
     return matched is not None
 
 
@@ -71,9 +71,11 @@ def get_next_token():
             char = char.decode('utf-8')
         if is_eof(char):
             return None
+
         # skip white space (whitespace, \n, \t, \f, \r, \v)
         if is_whitespace(char):
-            # print('whitespace')
+            if char == '\n':
+                line_number += 1
             char = get_next_char()
             continue
         # detect number
@@ -190,8 +192,8 @@ def get_next_token():
                     char = get_next_char()
                     if is_eof(char):
                         return ('Error', 'Unclosed comment', line_number, '/*')
-                    if char == '\n':
-                        line_number += 1
+            if char == '\n':
+                line_number += 1
                 continue
             # check for EOF
             elif char == '':
