@@ -1,5 +1,6 @@
 # This is an implimantation of a C-minus compiler(scanner module)
 # It is a part of the C-minus compiler project
+
 import re
 import os
 
@@ -24,9 +25,6 @@ def is_digit(char):
 def is_whitespace(char):
     global line_number
     matched = re.match(r'(\s|\t|\v|\f|\r|\n)', char)
-    # if char == '\n':
-    #     line_number += 1
-    #     return True
     return matched is not None
 
 
@@ -80,7 +78,6 @@ def get_next_token():
             continue
         # detect number
         if is_digit(char):
-            # print('digit')
             lexeme += char
             char = get_next_char()
             if is_eof(char):
@@ -128,7 +125,6 @@ def get_next_token():
                     break
                 if not (is_letter(char) or is_digit(char) or is_whitespace(char) or is_symbol_except_equal(char) or char == '='):
                     lexeme += char
-                    # file.seek(-1, os.SEEK_CUR)
                     return ('Error', 'Invalid input', line_number, lexeme)
                 if not is_letter(char) and not is_digit(char):
                     file.seek(-1, os.SEEK_CUR)
@@ -139,7 +135,6 @@ def get_next_token():
             break
         # detect unmatched comment
         if char == '*':
-            # print('Unmatched comment...')
             char = get_next_char()
             if is_eof(char):
                 lexeme += '*'
@@ -154,13 +149,11 @@ def get_next_token():
                 break
         # detect symbol - {=, ==}
         if is_symbol_except_equal(char):
-            # print('symbol')
             lexeme += char
             token_type = 'SYMBOL'
             break
         # detect = and ==
         if char == '=':
-            # print('== or =')
             lexeme += char
             char = get_next_char()
             if is_eof(char):
@@ -202,7 +195,6 @@ def get_next_token():
                 file.seek(-1, os.SEEK_CUR)
                 return ('Error', 'Invalid input', line_number, '/')
         else:
-            # file.seek(-1, os.SEEK_CUR)
             return ('Error', 'Invalid input', line_number, char)
 
     return token_type, lexeme, line_number
