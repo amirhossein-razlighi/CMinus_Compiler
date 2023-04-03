@@ -5,18 +5,6 @@ import re
 import os
 
 
-def main():
-    global file
-    global line_number
-    file = open('input.txt', 'rb')
-    line_number = 1
-    while True:
-        token = get_next_token()
-        if token is None or token[0] is None:
-            break
-        print(token)
-
-
 def is_digit(char):
     matched = re.match(r'[0-9]', char)
     return matched is not None
@@ -213,6 +201,79 @@ def get_next_token():
             return ('Error', 'Invalid input', line_number, char)
 
     return token_type, lexeme, line_number
+
+
+def save_tokens_to_file(tokens):
+    with open('tokens.txt', 'w') as f:
+        current_line_number = None
+        for token in tokens:
+            if token[2] != current_line_number:
+                if current_line_number is not None:
+                    f.write('\n')
+                current_line_number = token[2]
+                f.write(str(current_line_number) + '.' + '\t')
+            f.write('(' + token[0] + ', ' + token[1] + ') ')
+
+
+def save_to_errors_file(errors):
+    with open('lexical_errors.txt', 'w') as f:
+        current_line_number = None
+        for error in errors:
+            if error[2] != current_line_number:
+                if current_line_number is not None:
+                    f.write('\n')
+                current_line_number = error[2]
+                f.write(str(current_line_number) + '.' + '\t')
+            f.write('(' + error[-1] + ', ' + error[1] + ') ')
+
+
+def save_to_symbols_file(symbol_table):
+    counter = 1
+    keywords = ['break', 'else', 'if', 'int',
+                'repeat', 'return', 'until', 'void']
+
+    with open('symbol_table.txt', 'w') as f:
+        for keyword in keywords:
+            f.write(str(counter) + '.' + '\t' + keyword + '\n')
+            counter += 1
+
+        for index, identifier in enumerate(symbol_table):
+            if index != len(symbol_table) - 1:
+                f.write(str(counter) + '.' + '\t' + identifier + '\n')
+            else:
+                f.write(str(counter) + '.' + '\t' + identifier)
+            counter += 1
+
+
+def main():
+    global file
+    global line_number
+    global tokens
+    global errors
+    global symbol_table
+
+    file = open('input.txt', 'rb')
+    line_number = 1
+    tokens = []
+    errors = []
+    symbol_table = []
+
+    while True:
+        token = get_next_token()
+        if token is None or token[0] is None:
+            break
+        if token[0] == 'Error':
+            errors.append(token)
+        else:
+            if token[0] == 'ID':
+                if token[1] not in symbol_table:
+                    symbol_table.append(token[1])
+            tokens.append(token)
+        print(token)
+
+    save_tokens_to_file(tokens)
+    save_to_errors_file(errors)
+    save_to_symbols_file(symbol_table)
 
 
 if __name__ == '__main__':
