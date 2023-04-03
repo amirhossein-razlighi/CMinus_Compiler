@@ -99,7 +99,6 @@ def get_next_token():
             break
         # detect identifier and keyword
         if is_letter(char):
-            # print('letter')
             lexeme += char
             char = get_next_char()
             if is_eof(char):
@@ -111,6 +110,9 @@ def get_next_token():
             if not (is_letter(char) or is_digit(char) or is_whitespace(char) or is_symbol_except_equal(char) or char == '='):
                 file.seek(-1, os.SEEK_CUR)
                 return ('Error', 'Invalid input', line_number, lexeme)
+            if not is_letter(char) and not is_digit(char):
+                file.seek(-1, os.SEEK_CUR)
+                
             while is_letter(char) or is_digit(char):
                 lexeme += char
                 char = get_next_char()
