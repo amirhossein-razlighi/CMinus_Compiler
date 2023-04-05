@@ -144,7 +144,8 @@ def get_next_token():
                 break
             if char == '/':
                 return ('Error', 'Unmatched comment', line_number, '*/')
-            elif char == '#':
+            elif not (is_digit(char) or is_letter(char) or is_symbol_except_equal(char)
+                      or is_whitespace(char) or char == '=' or char == '/'):
                 lexeme += char
                 return ('Error', 'Invalid input', line_number, '*' + lexeme)
             else:
@@ -201,7 +202,8 @@ def get_next_token():
             # check for EOF
             elif char == '':
                 break
-            elif char == '#':
+            elif not (is_digit(char) or is_letter(char) or is_symbol_except_equal(char)
+                      or is_whitespace(char) or char == '=' or char == '/'):
                 lexeme += char
                 return ('Error', 'Invalid input', line_number, '/' + lexeme)
             else:
@@ -285,7 +287,7 @@ def main():
                 if token[1] not in symbol_table:
                     symbol_table.append(token[1])
             tokens.append(token)
-        print(token)
+        # print(token)
 
     save_tokens_to_file(tokens)
     save_to_errors_file(errors)
