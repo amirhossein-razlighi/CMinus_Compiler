@@ -1,6 +1,8 @@
 # This is an implimantation of a C-minus compiler(scanner module)
 # It is a part of the C-minus compiler project
 
+# AmirHossein Naghi Razlighi 99102423 | Hirad Davari 99106136
+
 import re
 import os
 
