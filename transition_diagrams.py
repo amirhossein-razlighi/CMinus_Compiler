@@ -1,4 +1,5 @@
 from scanner import Scanner
+from anytree import Node, RenderTree
 
 
 class Parser:
@@ -6,6 +7,7 @@ class Parser:
         self.scanner = scanner
         self.first_sets = {}  # read this from json
         self.follow_sets = {}  # read this from json
+        self.tree = None
 
     def match_token(expected_token):
         if self.scanner.get_current_token()[0] == expected_token:
