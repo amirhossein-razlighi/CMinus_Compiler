@@ -3,10 +3,12 @@ from anytree import Node, RenderTree
 
 
 class Parser:
-    def __init__(scanner):
+    def __init__(scanner, terminals, non_terminals, first_sets, follow_sets):
         self.scanner = scanner
-        self.first_sets = {}  # read this from json
-        self.follow_sets = {}  # read this from json
+        self.terminals = terminals
+        self.non_terminals = non_terminals
+        self.first_sets = first_sets
+        self.follow_sets = follow_sets
         self.tree = None
 
     def match_token(expected_token):
