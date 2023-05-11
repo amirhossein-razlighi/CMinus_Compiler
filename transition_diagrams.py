@@ -9,8 +9,8 @@ class Parser:
         self.non_terminals = non_terminals
         self.first_sets = first_sets
         self.follow_sets = follow_sets
-        self.tree = None
         self.errors = []
+        self.tree = None
 
     def match_token(expected_token):
         if self.scanner.get_current_token()[0] == expected_token:
@@ -24,10 +24,16 @@ class Parser:
 
     def transition_diagram_program():
         # for this rule: Program -> Declaration-list
+
+        # add root node
+        program_node = Node("Program")
+
         token = self.scanner.get_current_token()
         if token in self.first_sets["Declaration_list"]:
-            transition_diagram_declaration_list()
+            transition_diagram_declaration_list(parent=program_node)
         elif token in self.follow_sets["Program"]:
+            # remove root node
+            program_node = None
             if "Epsilon" in self.first_sets["Program"]:
                 return
             else:
@@ -35,15 +41,23 @@ class Parser:
         else:
             error(f"Illegal {token}")
             self.scanner.get_next_token()
+            # remove root node
+            program_node = None
             transition_diagram_program()
 
-    def transition_diagram_declaration_list():
+    def transition_diagram_declaration_list(parent):
         # for this rule: Declaration-list -> Declaration Declaration-list | Epsilon
+
+        # add node to self.tree
+        declaration_list_node = Node("Declaration_list", parent=parent)
+
         token = self.scanner.get_current_token()
         if token in self.first_sets["Declaration"]:
-            transition_diagram_declaration()
-            transition_diagram_declaration_list()
+            transition_diagram_declaration(parent=declaration_list_node)
+            transition_diagram_declaration_list(parent=declaration_list_node)
         elif token in self.follow_sets["Declaration_list"]:
+            # remove node from tree
+            declaration_list_node.parent = None
             if "Epsilon" in self.first_sets["Declaration_list"]:
                 return
             else:
@@ -51,16 +65,22 @@ class Parser:
         else:
             error(f"Illegal {token}")
             self.scanner.get_next_token()
+            # remove node from tree
+            declaration_list_node.parent = None
             transition_diagram_declaration_list()
 
-    def transition_diagram_declaration():
+    def transition_diagram_declaration(parent):
         # for this rule: Declaration -> Declaration-initial Declaration-prime
+        declaration_node = Node("Declaration", parent=parent)
+
         token = self.scanner.get_current_token()
         if token in self.first_sets["Declaration_initial"]:
             transition_diagram_declaration_initial()
             transition_diagram_declaration_prime()
         elif token in self.follow_sets["Declaration"]:
             if "Epsilon" in self.first_sets["Declaration"]:
+                # remove node from tree
+                declaration_node.parent = None
                 return
             else:
                 error(f"Missing Declaration")
