@@ -1,37 +1,45 @@
-from scanner import *
-
-def match(token, expected_token):
-    if token == expected_token:
-        return True
-        get_next_token()
-    else:
-        return False
+from scanner import Scanner
 
 
-def transition_diagram_program(token, first_sets, follow_sets):
-    # for this rule: Program -> Declaration-list
-    if token in first_sets["Declaration_list"]:
-        transition_diagram_declaration_list(token, first_sets, follow_sets)
-    elif token in follow_sets["Program"]:
-        if "Epsilon" in first_sets["Program"]:
-            return
+class Parser:
+
+    def __init__(scanner):
+        self.scanner = scanner
+        self.first_sets = {} # read this from json
+        self.follow_sets = {} # read this from json
+
+    def match(expected_token):
+        if self.scanner.get_current_token()[0] == expected_token:
+            Scanner.get_next_token()
+            return True
         else:
-            error(f"Missing Program")
-    else:
-        error(f"Illegal {token}")
-        transition_diagram_program(token, first_sets, follow_sets)
+            return False
 
 
-def transition_diagram_declaration_list():
-    # for this rule: Declaration-list -> Declaration Declaration-list | Epsilon
-    if token in first_sets["Declaration"]:
-        transition_diagram_declaration(token, first_sets, follow_sets)
-        transition_diagram_declaration_list(token, first_sets, follow_sets)
-    elif token in follow_sets["Declaration_list"]:
-        if "Epsilon" in first_sets["Declaration_list"]:
-            return
+    def transition_diagram_program():
+        # for this rule: Program -> Declaration-list    
+        if token in self.first_sets["Declaration_list"]:
+            transition_diagram_declaration_list()
+        elif token in self.follow_sets["Program"]:
+            if "Epsilon" in self.first_sets["Program"]:
+                return
+            else:
+                error(f"Missing Program")
         else:
-            error(f"Missing Declaration_list")
-    else:
-        error(f"Illegal {token}")
-        transition_diagram_declaration_list(token, first_sets, follow_sets)
+            error(f"Illegal {self.scanner.get_current_token()[0]}")
+            transition_diagram_program()
+
+
+    def transition_diagram_declaration_list():
+        # for this rule: Declaration-list -> Declaration Declaration-list | Epsilon
+        if token in self.first_sets["Declaration"]:
+            transition_diagram_declaration()
+            transition_diagram_declaration_list()
+        elif token in self.follow_sets["Declaration_list"]:
+            if "Epsilon" in self.first_sets["Declaration_list"]:
+                return
+            else:
+                error(f"Missing Declaration_list")
+        else:
+            error(f"Illegal {self.scanner.get_current_token()[0]}")
+            transition_diagram_declaration_list()
