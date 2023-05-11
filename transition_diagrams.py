@@ -43,7 +43,7 @@ class Parser:
             if "Epsilon" in self.first_sets["Declaration_list"]:
                 return
             else:
-                error(f"Missing Declaration_list")
+                error(f"Missing Declaration-list")
         else:
             error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -77,7 +77,7 @@ class Parser:
             if "Epsilon" in self.first_sets["Declaration_initial"]:
                 return
             else:
-                error(f"Missing Declaration_initial")
+                error(f"Missing Declaration-initial")
         else:
             error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -94,7 +94,7 @@ class Parser:
             if "Epsilon" in self.first_sets["Declaration_prime"]:
                 return
             else:
-                error(f"Missing Declaration_prime")
+                error(f"Missing Declaration-prime")
         else:
             error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -116,7 +116,7 @@ class Parser:
             if "Epsilon" in self.first_sets["Var_declaration_prime"]:
                 return
             else:
-                error(f"Missing Var_declaration_prime")
+                error(f"Missing Var-declaration-prime")
         else:
             error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -134,7 +134,7 @@ class Parser:
             if "Epsilon" in self.first_sets["Fun_declaration_prime"]:
                 return
             else:
-                error(f"Missing Fun_declaration_prime")
+                error(f"Missing Fun-declaration-prime")
         else:
             error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -151,7 +151,7 @@ class Parser:
             if "Epsilon" in self.first_sets["Type_specifier"]:
                 return
             else:
-                error(f"Missing Type_specifier")
+                error(f"Missing Type-specifier")
         else:
             error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -188,7 +188,7 @@ class Parser:
             if "Epsilon" in self.first_sets["Param_list"]:
                 return
             else:
-                error(f"Missing Param_list")
+                error(f"Missing Param-list")
         else:
             error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -220,7 +220,7 @@ class Parser:
             if "Epsilon" in self.first_sets["Param_prime"]:
                 return
             else:
-                error(f"Missing Param_prime")
+                error(f"Missing Param-prime")
         else:
             error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -238,7 +238,7 @@ class Parser:
             if "Epsilon" in self.first_sets["Compound_stmt"]:
                 return
             else:
-                error(f"Missing Compound_stmt")
+                error(f"Missing Compound-stmt")
         else:
             error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -254,7 +254,7 @@ class Parser:
             if "Epsilon" in self.first_sets["Statement_list"]:
                 return
             else:
-                error(f"Missing Statement_list")
+                error(f"Missing Statement-list")
         else:
             error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -298,7 +298,7 @@ class Parser:
             if "Epsilon" in self.first_sets["Expression_stmt"]:
                 return
             else:
-                error(f"Missing Expression_stmt")
+                error(f"Missing Expression-stmt")
         else:
             error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -340,7 +340,7 @@ class Parser:
             if "Epsilon" in self.first_sets["Factor_prime"]:
                 return
             else:
-                error(f"Missing Factor_prime")
+                error(f"Missing Factor-prime")
         else:
             error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -359,7 +359,7 @@ class Parser:
             if "Epsilon" in self.first_sets["Factor_zegond"]:
                 return
             else:
-                error(f"Missing Factor_zegond")
+                error(f"Missing Factor-zegond")
         else:
             error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -390,7 +390,7 @@ class Parser:
             if "Epsilon" in self.first_sets["Arg_list"]:
                 return
             else:
-                error(f"Missing Arg_list")
+                error(f"Missing Arg-list")
         else:
             error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -407,7 +407,7 @@ class Parser:
             if "Epsilon" in self.first_sets["Arg_list_prime"]:
                 return
             else:
-                error(f"Missing Arg_list_prime")
+                error(f"Missing Arg-list-prime")
         else:
             error(f"Illegal {token}")
             self.scanner.get_next_token()
