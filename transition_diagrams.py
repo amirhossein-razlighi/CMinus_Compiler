@@ -10,6 +10,7 @@ class Parser:
         self.first_sets = first_sets
         self.follow_sets = follow_sets
         self.tree = None
+        self.errors = []
 
     def match_token(expected_token):
         if self.scanner.get_current_token()[0] == expected_token:
@@ -17,6 +18,9 @@ class Parser:
             return True
         else:
             return False
+
+    def error(message):
+        self.errors.append((self.scanner.get_line_number(), message))
 
     def transition_diagram_program():
         # for this rule: Program -> Declaration-list
