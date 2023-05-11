@@ -326,3 +326,89 @@ class Parser:
             error(f"Illegal {token}")
             self.scanner.get_next_token()
             transition_diagram_b()
+
+    def transition_diagram_factor_prime():
+        # for this rule: Factor-prime -> ( Args ) | Var-prime
+        token = self.scanner.get_current_token()
+        if token == "(":
+            match_token("(")
+            transition_diagram_args()
+            match_token(")")
+        elif token in self.first_sets["Var_prime"]:
+            transition_diagram_var_prime()
+        elif token in self.follow_sets["Factor_prime"]:
+            if "Epsilon" in self.first_sets["Factor_prime"]:
+                return
+            else:
+                error(f"Missing Factor_prime")
+        else:
+            error(f"Illegal {token}")
+            self.scanner.get_next_token()
+            transition_diagram_factor_prime()
+
+    def transition_diagram_factor_zegond():
+        # for this rule: Factor-zegond -> ( Expression ) | NUM
+        token = self.scanner.get_current_token()
+        if token == "(":
+            match_token("(")
+            transition_diagram_expression()
+            match_token(")")
+        elif token == "NUM":
+            match_token("NUM")
+        elif token in self.follow_sets["Factor_zegond"]:
+            if "Epsilon" in self.first_sets["Factor_zegond"]:
+                return
+            else:
+                error(f"Missing Factor_zegond")
+        else:
+            error(f"Illegal {token}")
+            self.scanner.get_next_token()
+            transition_diagram_factor_zegond()
+
+    def transition_diagram_args():
+        # for this rule: Args -> Arg-list | Epsilon
+        token = self.scanner.get_current_token()
+        if token in self.first_sets["Arg_list"]:
+            transition_diagram_arg_list()
+        elif token in self.follow_sets["Args"]:
+            if "Epsilon" in self.first_sets["Args"]:
+                return
+            else:
+                error(f"Missing Args")
+        else:
+            error(f"Illegal {token}")
+            self.scanner.get_next_token()
+            transition_diagram_args()
+
+    def transition_diagram_arg_list():
+        # for this rule: Arg-list -> Expression Arg-list-prime
+        token = self.scanner.get_current_token()
+        if token in self.first_sets["Expression"]:
+            transition_diagram_expression()
+            transition_diagram_arg_list_prime()
+        elif token in self.follow_sets["Arg_list"]:
+            if "Epsilon" in self.first_sets["Arg_list"]:
+                return
+            else:
+                error(f"Missing Arg_list")
+        else:
+            error(f"Illegal {token}")
+            self.scanner.get_next_token()
+            transition_diagram_arg_list()
+
+    def transition_diagram_arg_list_prime():
+        # for this rule: Arg-list-prime -> , Expression Arg-list-prime | Epsilon
+        token = self.scanner.get_current_token()
+        if token == ",":
+            match_token(",")
+            transition_diagram_expression()
+            transition_diagram_arg_list_prime()
+        elif token in self.follow_sets["Arg_list_prime"]:
+            if "Epsilon" in self.first_sets["Arg_list_prime"]:
+                return
+            else:
+                error(f"Missing Arg_list_prime")
+        else:
+            error(f"Illegal {token}")
+            self.scanner.get_next_token()
+            transition_diagram_arg_list_prime()
