@@ -26,6 +26,7 @@ class Parser:
                 error(f"Missing Program")
         else:
             error(f"Illegal {token}")
+            self.scanner.get_next_token()
             transition_diagram_program()
 
     def transition_diagram_declaration_list():
@@ -41,6 +42,7 @@ class Parser:
                 error(f"Missing Declaration_list")
         else:
             error(f"Illegal {token}")
+            self.scanner.get_next_token()
             transition_diagram_declaration_list()
 
     def transition_diagram_declaration():
@@ -56,6 +58,7 @@ class Parser:
                 error(f"Missing Declaration")
         else:
             error(f"Illegal {token}")
+            self.scanner.get_next_token()
             transition_diagram_declaration()
 
     def transition_diagram_declaration_initial():
@@ -73,6 +76,7 @@ class Parser:
                 error(f"Missing Declaration_initial")
         else:
             error(f"Illegal {token}")
+            self.scanner.get_next_token()
             transition_diagram_declaration_initial()
 
     def transition_diagram_declaration_prime():
@@ -89,6 +93,7 @@ class Parser:
                 error(f"Missing Declaration_prime")
         else:
             error(f"Illegal {token}")
+            self.scanner.get_next_token()
             transition_diagram_declaration_prime()
 
     def transition_diagram_var_declaration_prime():
@@ -110,6 +115,7 @@ class Parser:
                 error(f"Missing Var_declaration_prime")
         else:
             error(f"Illegal {token}")
+            self.scanner.get_next_token()
             transition_diagram_var_declaration_prime()
 
     def transition_diagram_fun_declaration_prime():
@@ -127,6 +133,7 @@ class Parser:
                 error(f"Missing Fun_declaration_prime")
         else:
             error(f"Illegal {token}")
+            self.scanner.get_next_token()
             transition_diagram_fun_declaration_prime()
 
     def transition_diagram_type_specifier():
@@ -143,6 +150,7 @@ class Parser:
                 error(f"Missing Type_specifier")
         else:
             error(f"Illegal {token}")
+            self.scanner.get_next_token()
             transition_diagram_type_specifier()
 
     def transition_diagram_params():
@@ -162,6 +170,7 @@ class Parser:
                 error(f"Missing Params")
         else:
             error(f"Illegal {token}")
+            self.scanner.get_next_token()
             transition_diagram_params()
 
     def transition_diagram_param_list():
@@ -178,6 +187,7 @@ class Parser:
                 error(f"Missing Param_list")
         else:
             error(f"Illegal {token}")
+            self.scanner.get_next_token()
             transition_diagram_param_list()
 
     def transition_diagram_param():
@@ -193,6 +203,7 @@ class Parser:
                 error(f"Missing Param")
         else:
             error(f"Illegal {token}")
+            self.scanner.get_next_token()
             transition_diagram_param()
 
     def transition_diagram_param_prime():
@@ -208,6 +219,7 @@ class Parser:
                 error(f"Missing Param_prime")
         else:
             error(f"Illegal {token}")
+            self.scanner.get_next_token()
             transition_diagram_param_prime()
 
     def transition_diagram_compound_stmt():
@@ -225,6 +237,7 @@ class Parser:
                 error(f"Missing Compound_stmt")
         else:
             error(f"Illegal {token}")
+            self.scanner.get_next_token()
             transition_diagram_compound_stmt()
 
     def transition_diagram_statement_list():
@@ -240,6 +253,7 @@ class Parser:
                 error(f"Missing Statement_list")
         else:
             error(f"Illegal {token}")
+            self.scanner.get_next_token()
             transition_diagram_statement_list()
 
     def transition_diagram_statement():
@@ -262,6 +276,7 @@ class Parser:
                 error(f"Missing Statement")
         else:
             error(f"Illegal {token}")
+            self.scanner.get_next_token()
             transition_diagram_statement()
 
     def transition_diagram_expression_stmt():
@@ -282,6 +297,7 @@ class Parser:
                 error(f"Missing Expression_stmt")
         else:
             error(f"Illegal {token}")
+            self.scanner.get_next_token()
             transition_diagram_expression_stmt()
 
     def transition_diagram_b():
@@ -304,4 +320,5 @@ class Parser:
                 error(f"Missing B")
         else:
             error(f"Illegal {token}")
+            self.scanner.get_next_token()
             transition_diagram_b()
