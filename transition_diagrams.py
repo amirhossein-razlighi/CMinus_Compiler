@@ -18,6 +18,7 @@ class Parser:
 
     def transition_diagram_program():
         # for this rule: Program -> Declaration-list    
+        token = self.scanner.get_current_token()
         if token in self.first_sets["Declaration_list"]:
             transition_diagram_declaration_list()
         elif token in self.follow_sets["Program"]:
@@ -26,12 +27,13 @@ class Parser:
             else:
                 error(f"Missing Program")
         else:
-            error(f"Illegal {self.scanner.get_current_token()[0]}")
+            error(f"Illegal {token}")
             transition_diagram_program()
 
 
     def transition_diagram_declaration_list():
         # for this rule: Declaration-list -> Declaration Declaration-list | Epsilon
+        token = self.scanner.get_current_token()
         if token in self.first_sets["Declaration"]:
             transition_diagram_declaration()
             transition_diagram_declaration_list()
@@ -41,5 +43,5 @@ class Parser:
             else:
                 error(f"Missing Declaration_list")
         else:
-            error(f"Illegal {self.scanner.get_current_token()[0]}")
+            error(f"Illegal {token}")
             transition_diagram_declaration_list()
