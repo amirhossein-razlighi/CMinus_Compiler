@@ -13,10 +13,11 @@ def read_grammar_from_file(json_file_path):
         data = json.load(json_file)
     return (
         data["terminals"],
-        data["non-terminals"],
+        data["non_terminals"],
         data["first_sets"],
         data["follow_sets"],
     )
+
 
 
 if __name__ == "__main__":
@@ -30,6 +31,9 @@ if __name__ == "__main__":
 
     # Create the scanner
     scanner = Scanner("./input.txt")
+    if scanner == None:
+        print("Error opening input.txt")
+        exit(1)
 
     # Create the parser
     parser = Parser(
@@ -44,4 +48,7 @@ if __name__ == "__main__":
     parser.parse()
 
     # Print the parse tree
-    print(anytree.RenderTree(parser.parse_tree))
+    for pre, fill, node in anytree.RenderTree(parser.tree):
+        print("{}{}".format(pre, node.name))
+    print(parser.errors)
+

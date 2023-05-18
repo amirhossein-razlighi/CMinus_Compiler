@@ -31,4 +31,3 @@ void main(void$) {
     output(f(40, result));
     output(count);
 }
-1941
