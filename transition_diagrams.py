@@ -51,6 +51,8 @@ class Parser:
             self.tree = program_node
 
             self.transition_diagram_declaration_list(parent=program_node)
+            if self.scanner.get_current_token()[0] == "$":
+                Node("$", program_node)
         elif token0 in self.follow_sets["Program"] or token1 in self.follow_sets["Program"]:
             if "epsilon" in self.first_sets["Program"]:
                 Node("epsilon", program_node)
