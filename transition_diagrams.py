@@ -65,7 +65,7 @@ class Parser:
         token = self.scanner.get_current_token()[0]
         if token in self.first_sets["Declaration_list"]:
             # add node to tree
-            declaration_list_node = Node("Declaration_list", parent=parent)
+            declaration_list_node = Node("Declaration-list", parent=parent)
 
             self.transition_diagram_declaration(parent=declaration_list_node)
             self.transition_diagram_declaration_list(parent=declaration_list_node)
@@ -73,7 +73,7 @@ class Parser:
             if "epsilon" in self.first_sets["Declaration_list"]:
                 return
             else:
-                self.error(f"Missing Declaration_list")
+                self.error(f"Missing Declaration-list")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -115,7 +115,7 @@ class Parser:
             if "epsilon" in self.first_sets["Declaration_initial"]:
                 return
             else:
-                self.error(f"Missing Declaration_initial")
+                self.error(f"Missing Declaration-initial")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -137,7 +137,7 @@ class Parser:
             if "epsilon" in self.first_sets["Declaration_prime"]:
                 return
             else:
-                self.error(f"Missing Declaration_prime")
+                self.error(f"Missing Declaration-prime")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -165,7 +165,7 @@ class Parser:
             if "epsilon" in self.first_sets["Var_declaration_prime"]:
                 return
             else:
-                self.error(f"Missing Var_declaration_prime")
+                self.error(f"Missing Var-declaration-prime")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -189,7 +189,7 @@ class Parser:
             if "epsilon" in self.first_sets["Fun_declaration_prime"]:
                 return
             else:
-                self.error(f"Missing Fun_declaration_prime")
+                self.error(f"Missing Fun-declaration-prime")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -210,7 +210,7 @@ class Parser:
             if "epsilon" in self.first_sets["Type_specifier"]:
                 return
             else:
-                self.error(f"Missing Type_specifier")
+                self.error(f"Missing Type-specifier")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -258,7 +258,7 @@ class Parser:
             if "epsilon" in self.first_sets["Param_list"]:
                 return
             else:
-                self.error(f"Missing Param_list")
+                self.error(f"Missing Param-list")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -304,7 +304,7 @@ class Parser:
             if "epsilon" in self.first_sets["Param_prime"]:
                 return
             else:
-                self.error(f"Missing Param_prime")
+                self.error(f"Missing Param-prime")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -328,7 +328,7 @@ class Parser:
             if "epsilon" in self.first_sets["Compound_stmt"]:
                 return
             else:
-                self.error(f"Missing Compound_stmt")
+                self.error(f"Missing Compound-stmt")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -348,7 +348,7 @@ class Parser:
             if "epsilon" in self.first_sets["Statement_list"]:
                 return
             else:
-                self.error(f"Missing Statement_list")
+                self.error(f"Missing Statement-list")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -388,7 +388,7 @@ class Parser:
         token = self.scanner.get_current_token()[0]
         if token in self.first_sets["Expression_stmt"]:
             # add node to tree
-            expression_stmt_node = Node("Expression_stmt", parent=parent)
+            expression_stmt_node = Node("Expression-stmt", parent=parent)
 
             if token in self.first_sets["Expression"]:
                 self.transition_diagram_expression(parent=expression_stmt_node)
@@ -404,7 +404,7 @@ class Parser:
             if "epsilon" in self.first_sets["Expression_stmt"]:
                 return
             else:
-                self.error(f"Missing Expression_stmt")
+                self.error(f"Missing Expression-stmt")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -456,7 +456,7 @@ class Parser:
             if "epsilon" in self.first_sets["Factor_prime"]:
                 return
             else:
-                self.error(f"Missing Factor_prime")
+                self.error(f"Missing Factor-prime")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -481,7 +481,7 @@ class Parser:
             if "epsilon" in self.first_sets["Factor_zegond"]:
                 return
             else:
-                self.error(f"Missing Factor_zegond")
+                self.error(f"Missing Factor-zegond")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -520,7 +520,7 @@ class Parser:
             if "epsilon" in self.first_sets["Arg_list"]:
                 return
             else:
-                self.error(f"Missing Arg_list")
+                self.error(f"Missing Arg-list")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -682,7 +682,7 @@ class Parser:
             if "epsilon" in self.first_sets["Additive_expression_prime"]:
                 return
             else:
-                self.error(f"Missing Additive_expression_prime")
+                self.error(f"Missing Additive-expression-prime")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -701,7 +701,7 @@ class Parser:
             if "epsilon" in self.first_sets["Additive_expression_zegond"]:
                 return
             else:
-                self.error(f"Missing Additive_expression_zegond")
+                self.error(f"Missing Additive-expression-zegond")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -780,7 +780,7 @@ class Parser:
             if "epsilon" in self.first_sets["Term_prime"]:
                 return
             else:
-                self.error(f"Missing Term_prime")
+                self.error(f"Missing Term-prime")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -799,7 +799,7 @@ class Parser:
             if "epsilon" in self.first_sets["Term_zegond"]:
                 return
             else:
-                self.error(f"Missing Term_zegond")
+                self.error(f"Missing Term-zegond")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -867,7 +867,7 @@ class Parser:
             if "epsilon" in self.first_sets["Var_call_prime"]:
                 return
             else:
-                self.error(f"Missing Var_call_prime")
+                self.error(f"Missing Var-call-prime")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -888,7 +888,7 @@ class Parser:
             if "epsilon" in self.first_sets["Var_prime"]:
                 return
             else:
-                self.error(f"Missing Var_prime")
+                self.error(f"Missing Var-prime")
         else:
             self.error(f"Illegal {token[0]}")
             self.scanner.get_next_token()
@@ -949,7 +949,7 @@ class Parser:
         token = self.scanner.get_current_token()[0]
         if token in self.first_sets["Iteration_stmt"]:
             # add node to tree
-            iteration_stmt_node = Node("Iteration_stmt-stmt", parent=parent)
+            iteration_stmt_node = Node("Iteration-stmt", parent=parent)
 
             if token == "repeat":
                 self.match_token("repeat", iteration_stmt_node)

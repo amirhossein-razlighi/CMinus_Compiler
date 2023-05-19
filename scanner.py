@@ -3,7 +3,6 @@
 # attribute current_token will change and with the getter of this component, parser can access to
 # current token.
 
-import re
 import os
 
 
@@ -15,33 +14,42 @@ class Scanner:
         if self.file == None:
             return None
 
-    #@getattr(line_number, "line_number")
+    # @getattr(line_number, "line_number")
     def get_line_number(self):
         return self.line_number
 
-    #@getattr(current_token, "current_token")
+    # @getattr(current_token, "current_token")
     def get_current_token(self):
         return self.current_token
 
     def is_digit(self, char):
-        matched = re.match(r"[0-9]", char)
-        return matched is not None
+        # without using regex
+        return char in "0123456789"
 
     def is_whitespace(self, char):
-        matched = re.match(r"(\s|\t|\v|\f|\r|\n)", char)
-        return matched is not None
+        # without regex
+        return char in " \t\v\f\r\n"
 
     def is_letter(self, char):
-        matched = re.match(r"[A-Za-z]", char)
-        return matched is not None
+        # without regex
+        return char in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
     def is_keyword(self, word):
-        matched = re.match(r"(if|else|void|int|repeat|break|until|return)", word)
-        return matched is not None
+        # without regex
+        return word in [
+            "if",
+            "else",
+            "void",
+            "int",
+            "repeat",
+            "break",
+            "until",
+            "return",
+        ]
 
     def is_symbol_except_equal(self, char):
-        matched = re.match(r"(\+|-|\*|<|;|:|\(|\)|\[|\]|{|}|,)", char)
-        return matched is not None
+        # without regex
+        return char in "+-*<;:()[]{},"
 
     def is_eof(self, char):
         return char == ""
@@ -122,7 +130,7 @@ class Scanner:
                 char = self.get_next_char()
                 if self.is_eof(char):
                     if self.is_keyword(lexeme):
-                        token_type = lexeme #"KEYWORD"
+                        token_type = lexeme  # "KEYWORD"
                     else:
                         token_type = "ID"
                     break
@@ -143,7 +151,7 @@ class Scanner:
                     char = self.get_next_char()
                     if self.is_eof(char):
                         if self.is_keyword(lexeme):
-                            token_type = lexeme #"KEYWORD"
+                            token_type = lexeme  # "KEYWORD"
                         else:
                             token_type = "ID"
                         break
@@ -159,7 +167,7 @@ class Scanner:
                     if not self.is_letter(char) and not self.is_digit(char):
                         self.file.seek(-1, os.SEEK_CUR)
                 if self.is_keyword(lexeme):
-                    token_type = lexeme # "KEYWORD"
+                    token_type = lexeme  # "KEYWORD"
                 else:
                     token_type = "ID"
                 break
@@ -216,7 +224,7 @@ class Scanner:
                 if self.is_eof(char):
                     return ("Error", "Invalid input", self.line_number, "/")
                 elif char == "*":
-                    error_message = get_unclosed_comment_message() + "..."
+                    error_message = self.get_unclosed_comment_message() + "..."
                     char = self.get_next_char()
                     if self.is_eof(char):
                         return (
@@ -236,7 +244,7 @@ class Scanner:
                                     error_message,
                                 )
                             if char == "/":
-                                return get_next_token()
+                                return self.get_next_token()
                         char = self.get_next_char()
                         if self.is_eof(char):
                             return (
@@ -270,6 +278,7 @@ class Scanner:
         self.current_token = (token_type, lexeme, self.line_number)
         return token_type, lexeme, self.line_number
 
+
 def save_tokens_to_file(tokens):
     with open("tokens.txt", "w") as f:
         current_line_number = None
@@ -281,6 +290,7 @@ def save_tokens_to_file(tokens):
                 f.write(str(current_line_number) + "." + "\t")
             f.write("(" + token[0] + ", " + token[1] + ") ")
         f.write("\n")
+
 
 def save_to_errors_file(errors):
     with open("lexical_errors.txt", "w") as f:
@@ -296,6 +306,7 @@ def save_to_errors_file(errors):
             f.write("There is no lexical error.")
         else:
             f.write("\n")
+
 
 def save_to_symbols_file(symbol_table):
     counter = 1
