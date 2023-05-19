@@ -46,9 +46,9 @@ class Parser:
 
         # add root node
         program_node = Node("Program")
+        self.tree = program_node
 
-        if token0 in self.first_sets["Program"] or token1 in self.first_sets["Program"]:
-            self.tree = program_node
+        if "epsilon" in self.first_sets["Program"] or token0 in self.first_sets["Program"] or token1 in self.first_sets["Program"]:
 
             self.transition_diagram_declaration_list(parent=program_node)
             if self.scanner.get_current_token()[0] == "$":
@@ -94,7 +94,7 @@ class Parser:
         # add node to tree
         declaration_node = Node("Declaration", parent=parent)
 
-        if token0 in self.first_sets["Declaration"] or token1 in self.first_sets["Declaration"]:
+        if "epsilon" in self.first_sets["Declaration"] or token0 in self.first_sets["Declaration"] or token1 in self.first_sets["Declaration"]:
             self.transition_diagram_declaration_initial(parent=declaration_node)
             self.transition_diagram_declaration_prime(parent=declaration_node)
         elif token0 in self.follow_sets["Declaration"] or token1 in self.follow_sets["Declaration"]:
@@ -116,7 +116,7 @@ class Parser:
         # add node to tree
         declaration_inital_node = Node("Declaration-initial", parent=parent)
 
-        if token0 in self.first_sets["Declaration_initial"] or token1 in self.first_sets["Declaration_initial"]:
+        if "epsilon" in self.first_sets["Declaration_initial"] or token0 in self.first_sets["Declaration_initial"] or token1 in self.first_sets["Declaration_initial"]:
             self.transition_diagram_type_specifier(parent=declaration_inital_node)
             matched = self.match_token("ID",declaration_inital_node)
             if not matched:
@@ -126,7 +126,7 @@ class Parser:
                 Node("epsilon", declaration_inital_node)
                 return
             else:
-                self.error(f"Missing Declaration_initial")
+                self.error(f"Missing Declaration-initial")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -140,7 +140,7 @@ class Parser:
         # add node to tree
         declaration_prime_node = Node("Declaration-prime", parent=parent)
 
-        if token0 in self.first_sets["Declaration_prime"] or token1 in self.first_sets["Declaration_prime"]:
+        if "epsilon" in self.first_sets["Declaration_prime"] or token0 in self.first_sets["Declaration_prime"] or token1 in self.first_sets["Declaration_prime"]:
             if token0 in self.first_sets["Fun_declaration_prime"] or token1 in self.first_sets["Fun_declaration_prime"]:
                 self.transition_diagram_fun_declaration_prime(parent=declaration_prime_node)
             else:
@@ -150,7 +150,7 @@ class Parser:
                 Node("epsilon", declaration_prime_node)
                 return
             else:
-                self.error(f"Missing Declaration_prime")
+                self.error(f"Missing Declaration-prime")
         else:
             self.error(f"Illegal {token}")
             self.scanner.get_next_token()
@@ -295,7 +295,7 @@ class Parser:
         # add node to tree
         param_node = Node("Param", parent=parent)
 
-        if token0 in self.first_sets["Param"] or token1 in self.first_sets["Param"]:
+        if "epsilon" in self.first_sets["Param"] or token0 in self.first_sets["Param"] or token1 in self.first_sets["Param"]:
             self.transition_diagram_declaration_initial(parent=param_node)
             self.transition_diagram_param_prime(parent=param_node)
         elif token0 in self.follow_sets["Param"] or token1 in self.follow_sets["Param"]:
@@ -389,7 +389,7 @@ class Parser:
         # add node to tree
         statement_node = Node("Statement", parent=parent)
 
-        if token0 in self.first_sets["Statement"] or token1 in self.first_sets["Statement"]:
+        if "epsilon" in self.first_sets["Statement"] or token0 in self.first_sets["Statement"] or token1 in self.first_sets["Statement"]:
             if token0 in self.first_sets["Expression_stmt"] or token1 in self.first_sets["Expression_stmt"]:
                 self.transition_diagram_expression_stmt(parent=statement_node)
             elif token0 in self.first_sets["Compound_stmt"] or token1 in self.first_sets["Compound_stmt"]:
@@ -449,7 +449,7 @@ class Parser:
         # add node to tree
         b_node = Node(f"B", parent=parent)
 
-        if token0 in self.first_sets["B"] or token1 in self.first_sets["B"]:
+        if "epsilon" in self.first_sets["B"] or token0 in self.first_sets["B"] or token1 in self.first_sets["B"]:
             if token1 == "=":
                 self.match_token("=", b_node)
                 self.transition_diagram_expression(parent=b_node)
@@ -505,7 +505,7 @@ class Parser:
         # add node to tree
         factor_zegond_node = Node("Factor-zegond", parent=parent)
 
-        if token in self.first_sets["Factor_zegond"]:
+        if token0 in self.first_sets["Factor_zegond"] or token1 in self.first_sets["Factor_zegond"]:
             if token1 == "(":
                 self.match_token("(", factor_zegond_node)
                 self.transition_diagram_expression(parent=factor_zegond_node)
@@ -553,7 +553,7 @@ class Parser:
         # add node to tree
         arg_list_node = Node("Arg-list", parent=parent)
 
-        if token0 in self.first_sets["Arg_list"] or token1 in self.first_sets["Arg_list"]:
+        if "epsilon" in self.first_sets["Arg_list"] or token0 in self.first_sets["Arg_list"] or token1 in self.first_sets["Arg_list"]:
             self.transition_diagram_expression(parent=arg_list_node)
             self.transition_diagram_arg_list_prime(parent=arg_list_node)
         elif token0 in self.follow_sets["Arg_list"] or token1 in self.follow_sets["Arg_list"]:
@@ -598,7 +598,7 @@ class Parser:
         # add node to tree
         h_node = Node("H", parent=parent)
 
-        if token0 in self.first_sets["H"] or token1 in self.first_sets["H"]:
+        if "epsilon" in self.first_sets["H"] or token0 in self.first_sets["H"] or token1 in self.first_sets["H"]:
             if token1 == "=":
                 self.match_token("=", h_node)
                 self.transition_diagram_expression(parent=h_node)
@@ -624,7 +624,7 @@ class Parser:
         # add node to tree
         simple_expression_zegond_node = Node("Simple-expression-zegond", parent=parent)
 
-        if token0 in self.first_sets["Simple_expression_zegond"] or token1 in self.first_sets["Simple_expression_zegond"]:
+        if "epsilon" in self.first_sets["Simple_expression_zegond"] or token0 in self.first_sets["Simple_expression_zegond"] or token1 in self.first_sets["Simple_expression_zegond"]:
             self.transition_diagram_additive_expression_zegond(parent=simple_expression_zegond_node)
             self.transition_diagram_c(parent=simple_expression_zegond_node)
         elif token0 in self.follow_sets["Simple_expression_zegond"] or token1 in self.follow_sets["Simple_expression_zegond"]:
@@ -645,7 +645,7 @@ class Parser:
         # add node to tree
         simple_expression_prime_node = Node("Simple-expression-prime", parent=parent)
 
-        if token0 in self.first_sets["Simple_expression_prime"] or token1 in self.first_sets["Simple_expression_prime"]:
+        if "epsilon" in self.first_sets["Simple_expression_prime"] or token0 in self.first_sets["Simple_expression_prime"] or token1 in self.first_sets["Simple_expression_prime"]:
             self.transition_diagram_additive_expression_prime(parent=simple_expression_prime_node)
             self.transition_diagram_c(parent=simple_expression_prime_node)
         elif token0 in self.follow_sets["Simple_expression_prime"] or token1 in self.follow_sets["Simple_expression_prime"]:
@@ -710,7 +710,7 @@ class Parser:
         # add node to tree
         additive_expression_node = Node("Additive-expression", parent=parent)
 
-        if token0 in self.first_sets["Additive_expression"] or token1 in self.first_sets["Additive_expression"]:
+        if "epsilon" in self.first_sets["Additive_expression"] or token0 in self.first_sets["Additive_expression"] or token1 in self.first_sets["Additive_expression"]:
             self.transition_diagram_term(parent=additive_expression_node)
             self.transition_diagram_d(parent=additive_expression_node)
         elif token0 in self.follow_sets["Additive_expression"] or token1 in self.follow_sets["Additive_expression"]:
@@ -731,7 +731,7 @@ class Parser:
         # add node to tree
         additive_expression_prime_node = Node("Additive-expression-prime", parent=parent)
 
-        if token0 in self.first_sets["Additive_expression_prime"] or token1 in self.first_sets["Additive_expression_prime"]:
+        if "epsilon" in self.first_sets["Additive_expression_prime"] or token0 in self.first_sets["Additive_expression_prime"] or token1 in self.first_sets["Additive_expression_prime"]:
             self.transition_diagram_term_prime(parent=additive_expression_prime_node)
             self.transition_diagram_d(parent=additive_expression_prime_node)
         elif token0 in self.follow_sets["Additive_expression_prime"] or token1 in self.follow_sets["Additive_expression_prime"]:
@@ -752,7 +752,7 @@ class Parser:
         # add node to tree
         additive_expression_zegond_node = Node("Additive-expression-zegond", parent=parent)
 
-        if token0 in self.first_sets["Additive_expression_zegond"] or token1 in self.first_sets["Additive_expression_zegond"]:
+        if "epsilon" in self.first_sets["Additive_expression_zegond"] or token0 in self.first_sets["Additive_expression_zegond"] or token1 in self.first_sets["Additive_expression_zegond"]:
             self.transition_diagram_term_zegond(parent=additive_expression_zegond_node)
             self.transition_diagram_d(parent=additive_expression_zegond_node)
         elif token0 in self.follow_sets["Additive_expression_zegond"] or token1 in self.follow_sets["Additive_expression_zegond"]:
@@ -818,7 +818,7 @@ class Parser:
         # add node to tree
         term_node = Node("Term", parent=parent)
 
-        if token0 in self.first_sets["Term"] or token1 in self.first_sets["Term"]:
+        if "epsilon" in self.first_sets["Term"] or token0 in self.first_sets["Term"] or token1 in self.first_sets["Term"]:
             self.transition_diagram_factor(parent=term_node)
             self.transition_diagram_g(parent=term_node)
         elif token0 in self.follow_sets["Term"] or token1 in self.follow_sets["Term"]:
@@ -839,7 +839,7 @@ class Parser:
         # add node to tree
         term_prime_node = Node("Term-prime", parent=parent)
 
-        if token0 in self.first_sets["Term_prime"] or token1 in self.first_sets["Term_prime"]:
+        if "epsilon" in self.first_sets["Term_prime"] or token0 in self.first_sets["Term_prime"] or token1 in self.first_sets["Term_prime"]:
             self.transition_diagram_factor_prime(parent=term_prime_node)
             self.transition_diagram_g(parent=term_prime_node)
         elif token0 in self.follow_sets["Term_prime"] or token1 in self.follow_sets["Term_prime"]:
@@ -860,7 +860,7 @@ class Parser:
         # add node to tree
         term_zegond_node = Node("Term-zegond", parent=parent)
 
-        if token0 in self.first_sets["Term_zegond"] or token1 in self.first_sets["Term_zegond"]:
+        if "epsilon" in self.first_sets["Term_zegond"] or token0 in self.first_sets["Term_zegond"] or token1 in self.first_sets["Term_zegond"]:
             self.transition_diagram_factor_zegond(parent=term_zegond_node)
             self.transition_diagram_g(parent=term_zegond_node)
         elif token0 in self.follow_sets["Term_zegond"] or token1 in self.follow_sets["Term_zegond"]:
@@ -929,7 +929,7 @@ class Parser:
         # add node to tree
         var_call_prime_node = Node("Var-call-prime", parent=parent)
 
-        if token0 in self.first_sets["Var_call_prime"] or token1 in self.first_sets["Var_call_prime"]:
+        if "epsilon" in self.first_sets["Var_call_prime"] or token0 in self.first_sets["Var_call_prime"] or token1 in self.first_sets["Var_call_prime"]:
             if self.match_token("(", var_call_prime_node):
                 self.transition_diagram_args(parent=var_call_prime_node)
                 if not self.match_token(")", var_call_prime_node):
@@ -949,7 +949,7 @@ class Parser:
 
     def transition_diagram_var_prime(self, parent):
 
-        token0, token1, _ = self.scanner.get_current_toke
+        token0, token1, _ = self.scanner.get_current_token()
 
         # add node to tree
         var_prime_node = Node("Var-prime", parent=parent)
@@ -977,7 +977,7 @@ class Parser:
         # add node to tree
         expression_node = Node("Expression", parent=parent)
 
-        if token0 in self.first_sets["Expression"] or token1 in self.first_sets["Expression"]:
+        if "epsilon" in self.first_sets["Expression"] or token0 in self.first_sets["Expression"] or token1 in self.first_sets["Expression"]:
             if token0 in self.first_sets["Simple_expression_zegond"] or token1 in self.first_sets["Simple_expression_zegond"]:
                 self.transition_diagram_simple_expression_zegond(expression_node)
             elif token0 == "ID":
