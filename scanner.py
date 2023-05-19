@@ -130,7 +130,7 @@ class Scanner:
                 char = self.get_next_char()
                 if self.is_eof(char):
                     if self.is_keyword(lexeme):
-                        token_type = lexeme  # "KEYWORD"
+                        token_type = "KEYWORD"
                     else:
                         token_type = "ID"
                     break
@@ -151,7 +151,7 @@ class Scanner:
                     char = self.get_next_char()
                     if self.is_eof(char):
                         if self.is_keyword(lexeme):
-                            token_type = lexeme  # "KEYWORD"
+                            token_type =  "KEYWORD"
                         else:
                             token_type = "ID"
                         break
@@ -167,7 +167,7 @@ class Scanner:
                     if not self.is_letter(char) and not self.is_digit(char):
                         self.file.seek(-1, os.SEEK_CUR)
                 if self.is_keyword(lexeme):
-                    token_type = lexeme  # "KEYWORD"
+                    token_type = "KEYWORD"
                 else:
                     token_type = "ID"
                 break
@@ -176,7 +176,7 @@ class Scanner:
                 char = self.get_next_char()
                 if self.is_eof(char):
                     lexeme += "*"
-                    token_type = lexeme
+                    token_type = "SYMBOL"
                     break
                 if char == "/":
                     return ("Error", "Unmatched comment", self.line_number, "*/")
@@ -193,29 +193,29 @@ class Scanner:
                 else:
                     self.file.seek(-1, os.SEEK_CUR)
                     lexeme += "*"
-                    token_type = lexeme
+                    token_type = "SYMBOL"
                     break
             # detect symbol - {=, ==}
             if self.is_symbol_except_equal(char):
                 lexeme += char
-                token_type = lexeme
+                token_type = "SYMBOL"
                 break
             # detect = and ==
             if char == "=":
                 lexeme += char
                 char = self.get_next_char()
                 if self.is_eof(char):
-                    token_type = lexeme
+                    token_type = "SYMBOL"
                     break
                 if char == "=":
                     lexeme += char
-                    token_type = lexeme
+                    token_type = "SYMBOL"
                 elif char == "#":
                     lexeme += char
                     return ("Error", "Invalid input", self.line_number, lexeme)
                 else:
                     self.file.seek(-1, os.SEEK_CUR)
-                    token_type = lexeme
+                    token_type = "SYMBOL"
                 break
             # detect comment
             if char == "/":
