@@ -33,8 +33,9 @@ def save_errors_to_file(file_address, errors):
         else:
             for error in errors:
                 # Convert error to lowercase
-                error_msg = error[1].split(" ")
-                error_msg = error_msg[0].lower() + " " + error_msg[1]
+                error_msg = error[1]
+                # error_msg = error[1].split(" ")
+                # error_msg = error_msg[0].lower() + " " + error_msg[1]
                 error_str = "#" + str(error[0]) + " : syntax error, " + error_msg
                 f.write("{}\n".format(error_str))
 

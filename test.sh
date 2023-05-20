@@ -13,7 +13,7 @@ for test in $tests; do
 		echo "FAILED"
 		continue
 	fi;
-	echo "=========== checking parse tree ============="
+	echo "=========== diff parse tree ============="
 	lines=$(diff parse_tree.txt $path/parse_tree.txt | wc -l)
 	if (( lines > lnthresh )); then
 		diff parse_tree.txt $path/parse_tree.txt | head -n$lnthresh
@@ -21,7 +21,7 @@ for test in $tests; do
 	else
 		diff parse_tree.txt $path/parse_tree.txt 
 	fi;
-	echo "=========== checking syntax errors ============="
+	echo "=========== diff syntax errors ============="
 	lines=$(diff syntax_errors.txt $path/syntax_errors.txt | wc -l)
 	if (( lines > lnthresh )); then
 		diff syntax_errors.txt $path/syntax_errors.txt | head -n$lnthresh

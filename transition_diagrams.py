@@ -17,23 +17,14 @@ class Parser:
     def parse(self):
         # call get next token for the first time
         self.scanner.get_next_token()
-        rl = sys.getrecursionlimit()
-        print(rl)
-        sys.setrecursionlimit(3000)
         res = self.transition_diagram_program()
-        sys.setrecursionlimit(rl)
         return res
 
 
     def match_token(self, expected_token, parent):
         token0, token1, _ = self.scanner.get_current_token()
         if self.grim:
-            return
-        if token0 == "$" and not ("$" in self.follow_sets["Declaration_list"] and "epsilon" in self.first_sets["Declaration_list"]):
-            if not self.grim:
-                self.grim = True
-                self.error("unexpected EOF")
-            return
+            return True
         if token0 == expected_token or token1 == expected_token:
 
             # add node to tree
@@ -66,13 +57,13 @@ class Parser:
                 Node("epsilon", program_node)
                 return
             else:
-                self.error(f"Missing Program")
+                self.error(f"missing Program")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             program_node.parent = None
@@ -87,7 +78,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Declaration_list"] and "epsilon" in self.first_sets["Declaration_list"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -101,13 +92,13 @@ class Parser:
                 Node("epsilon", declaration_list_node)
                 return
             else:
-                self.error(f"Missing Declaration_list")
+                self.error(f"missing Declaration_list")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             declaration_list_node.parent = None
@@ -122,7 +113,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Declaration"] and "epsilon" in self.first_sets["Declaration"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -136,13 +127,13 @@ class Parser:
                 Node("epsilon", declaration_node)
                 return
             else:
-                self.error(f"Missing Declaration")
+                self.error(f"missing Declaration")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             declaration_node.parent = None
@@ -157,7 +148,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Declaration_initial"] and "epsilon" in self.first_sets["Declaration_initial"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -167,19 +158,19 @@ class Parser:
             self.transition_diagram_type_specifier(parent=declaration_inital_node)
             matched = self.match_token("ID",declaration_inital_node)
             if not matched:
-                self.error(f"Missing ID")
+                self.error(f"missing ID")
         elif token0 in self.follow_sets["Declaration_initial"] or token1 in self.follow_sets["Declaration_initial"]:
             if "epsilon" in self.first_sets["Declaration_initial"]:
                 Node("epsilon", declaration_inital_node)
                 return
             else:
-                self.error(f"Missing Declaration-initial")
+                self.error(f"missing Declaration-initial")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             declaration_inital_node.parent = None
@@ -194,7 +185,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Declaration_prime"] and "epsilon" in self.first_sets["Declaration_prime"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -210,13 +201,13 @@ class Parser:
                 Node("epsilon", declaration_prime_node)
                 return
             else:
-                self.error(f"Missing Declaration-prime")
+                self.error(f"missing Declaration-prime")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             declaration_prime_node.parent = None
@@ -231,7 +222,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Var_declaration_prime"] and "epsilon" in self.first_sets["Var_declaration_prime"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -243,23 +234,23 @@ class Parser:
             elif token1 == "[":
                 self.match_token("[", var_declaration_prime_node)
                 if not self.match_token("NUM", var_declaration_prime_node):
-                    self.error(f"Missing NUM")
+                    self.error(f"missing NUM")
                 if not self.match_token("]", var_declaration_prime_node):
-                    self.error(f"Missing ]")
+                    self.error(f"missing ]")
                 if not self.match_token(";", var_declaration_prime_node):
-                    self.error(f"Missing ;")
+                    self.error(f"missing ;")
         elif token0 in self.follow_sets["Var_declaration_prime"] or token1 in self.follow_sets["Var_declaration_prime"]:
             if "epsilon" in self.first_sets["Var_declaration_prime"]:
                 Node("epsilon", var_declaration_prime_node)
                 return
             else:
-                self.error(f"Missing Var_declaration_prime")
+                self.error(f"missing Var_declaration_prime")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             var_declaration_prime_node.parent = None
@@ -274,7 +265,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Fun_declaration_prime"] and "epsilon" in self.first_sets["Fun_declaration_prime"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -285,20 +276,20 @@ class Parser:
                 self.match_token("(", fun_declaration_prime_node)
                 self.transition_diagram_params(parent=fun_declaration_prime_node)
                 if not self.match_token(")", fun_declaration_prime_node):
-                    self.error(f"Missing )")
+                    self.error(f"missing )")
                 self.transition_diagram_compound_stmt(parent=fun_declaration_prime_node)
         elif token0 in self.follow_sets["Fun_declaration_prime"] or token1 in self.follow_sets["Fun_declaration_prime"]:
             if "epsilon" in self.first_sets["Fun_declaration_prime"]:
                 Node("epsilon", fun_declaration_prime_node)
                 return
             else:
-                self.error(f"Missing Fun_declaration_prime")
+                self.error(f"missing Fun_declaration_prime")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             fun_declaration_prime_node.parent = None
@@ -312,7 +303,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Type_specifier"] and "epsilon" in self.first_sets["Type_specifier"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -328,13 +319,13 @@ class Parser:
                 Node("epsilon", type_specifier_node)
                 return
             else:
-                self.error(f"Missing Type_specifier")
+                self.error(f"missing Type_specifier")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             type_specifier_node.parent = None
@@ -349,7 +340,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Params"] and "epsilon" in self.first_sets["Params"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -359,7 +350,7 @@ class Parser:
             if token1 == "int":
                 self.match_token("int", params_node)
                 if not self.match_token("ID", params_node):
-                    self.error(f"Missing ID")
+                    self.error(f"missing ID")
                 self.transition_diagram_param_prime(parent=params_node)
                 self.transition_diagram_param_list(parent=params_node)
             elif token1 == "void":
@@ -369,13 +360,15 @@ class Parser:
                 Node("epsilon", params_node)
                 return
             else:
-                self.error(f"Missing Params")
+                # remove node from tree
+                params_node.parent = None
+                self.error(f"missing Params")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             params_node.parent = None
@@ -390,7 +383,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Param_list"] and "epsilon" in self.first_sets["Param_list"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -406,13 +399,13 @@ class Parser:
                 Node("epsilon", param_list_node)
                 return
             else:
-                self.error(f"Missing Param_list")
+                self.error(f"missing Param_list")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             param_list_node.parent = None
@@ -427,7 +420,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Param"] and "epsilon" in self.first_sets["Param"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -441,13 +434,13 @@ class Parser:
                 Node("epsilon", param_node)
                 return
             else:
-                self.error(f"Missing Param")
+                self.error(f"missing Param")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             param_node.parent = None
@@ -462,7 +455,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Param_prime"] and "epsilon" in self.first_sets["Param_prime"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -472,19 +465,19 @@ class Parser:
             if token1 == "[":
                 self.match_token("[", param_prime_node)
                 if not self.match_token("]", param_prime_node):
-                    self.error(f"Missing ]")
+                    self.error(f"missing ]")
         elif token0 in self.follow_sets["Param_prime"] or token1 in self.follow_sets["Param_prime"]:
             if "epsilon" in self.first_sets["Param_prime"]:
                 Node("epsilon", param_prime_node)
                 return
             else:
-                self.error(f"Missing Param_prime")
+                self.error(f"missing Param_prime")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             param_prime_node.parent = None
@@ -499,7 +492,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Compound_stmt"] and "epsilon" in self.first_sets["Compound_stmt"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -511,19 +504,19 @@ class Parser:
                 self.transition_diagram_declaration_list(parent=compound_stmt_node)
                 self.transition_diagram_statement_list(parent=compound_stmt_node)
                 if not self.match_token("}", compound_stmt_node):
-                    self.error("Missing }")
+                    self.error("missing }")
         elif token0 in self.follow_sets["Compound_stmt"] or token1 in self.follow_sets["Compound_stmt"]:
             if "epsilon" in self.first_sets["Compound_stmt"]:
                 Node("epsilon", compound_stmt_node)
                 return
             else:
-                self.error(f"Missing Compound_stmt")
+                self.error(f"missing Compound_stmt")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             compound_stmt_node.parent = None
@@ -538,7 +531,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Statement_list"] and "epsilon" in self.first_sets["Statement_list"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -552,13 +545,13 @@ class Parser:
                 Node("epsilon", compound_list_node)
                 return
             else:
-                self.error(f"Missing Statement_list")
+                self.error(f"missing Statement_list")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             compound_list_node.parent = None
@@ -573,7 +566,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Statement"] and "epsilon" in self.first_sets["Statement"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -595,13 +588,13 @@ class Parser:
                 Node("epsilon", statement_node)
                 return
             else:
-                self.error(f"Missing Statement")
+                self.error(f"missing Statement")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             statement_node.parent = None
@@ -616,7 +609,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Expression_stmt"] and "epsilon" in self.first_sets["Expression_stmt"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -626,11 +619,11 @@ class Parser:
             if token0 in self.first_sets["Expression"] or token1 in self.first_sets["Expression"]:
                 self.transition_diagram_expression(parent=expression_stmt_node)
                 if not self.match_token(";", expression_stmt_node):
-                    self.error(f"Missing ;")
+                    self.error(f"missing ;")
             elif token1 == "break":
                 self.match_token("break", expression_stmt_node)
                 if not self.match_token(";", expression_stmt_node):
-                    self.error(f"Missing ;")
+                    self.error(f"missing ;")
             elif token1 == ";":
                 self.match_token(";", expression_stmt_node)
         elif token0 in self.follow_sets["Expression_stmt"] or token1 in self.follow_sets["Expression_stmt"]:
@@ -638,13 +631,13 @@ class Parser:
                 Node("epsilon", expression_stmt_node)
                 return
             else:
-                self.error(f"Missing Expression-stmt")
+                self.error(f"missing Expression-stmt")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             expression_stmt_node.parent = None
@@ -659,7 +652,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["B"] and "epsilon" in self.first_sets["B"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -673,7 +666,7 @@ class Parser:
                 self.match_token("[", b_node)
                 self.transition_diagram_expression(parent=b_node)
                 if not self.match_token("]", b_node):
-                    self.error(f"Missing ]")
+                    self.error(f"missing ]")
                 self.transition_diagram_h(parent=b_node)
             else:
                 self.transition_diagram_simple_expression_prime(parent=b_node)
@@ -682,13 +675,13 @@ class Parser:
                 Node("epsilon", b_node)
                 return
             else:
-                self.error(f"Missing B")
+                self.error(f"missing B")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             b_node.parent = None
@@ -703,7 +696,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Factor_prime"] and "epsilon" in self.first_sets["Factor_prime"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -714,19 +707,19 @@ class Parser:
                 self.match_token("(", factor_prime_node)
                 self.transition_diagram_args(parent=factor_prime_node)
                 if not self.match_token(")", factor_prime_node):
-                    self.error(f"Missing )")
+                    self.error(f"missing )")
         elif token0 in self.follow_sets["Factor_prime"] or token1 in self.follow_sets["Factor_prime"]:
             if "epsilon" in self.first_sets["Factor_prime"]:
                 Node("epsilon", factor_prime_node)
                 return
             else:
-                self.error(f"Missing Factor-prime")
+                self.error(f"missing Factor-prime")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             factor_prime_node.parent = None
@@ -741,7 +734,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Factor_zegond"] and "epsilon" in self.first_sets["Factor_zegond"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -752,7 +745,7 @@ class Parser:
                 self.match_token("(", factor_zegond_node)
                 self.transition_diagram_expression(parent=factor_zegond_node)
                 if not self.match_token(")", factor_zegond_node):
-                    self.error(f"Missing )")
+                    self.error(f"missing )")
             elif token0 == "NUM":
                 self.match_token("NUM", factor_zegond_node)
         elif token0 in self.follow_sets["Factor_zegond"] or token1 in self.follow_sets["Factor_zegond"]:
@@ -760,13 +753,13 @@ class Parser:
                 Node("epsilon", factor_zegond_node)
                 return
             else:
-                self.error(f"Missing Factor-zegond")
+                self.error(f"missing Factor-zegond")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             factor_zegond_node.parent = None
@@ -781,7 +774,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Args"] and "epsilon" in self.first_sets["Args"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -794,13 +787,13 @@ class Parser:
                 Node("epsilon", args_node)
                 return
             else:
-                self.error(f"Missing Args")
+                self.error(f"missing Args")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             args_node.parent = None
@@ -815,7 +808,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Arg_list"] and "epsilon" in self.first_sets["Arg_list"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -829,13 +822,13 @@ class Parser:
                 Node("epsilon", arg_list_node)
                 return
             else:
-                self.error(f"Missing Arg-list")
+                self.error(f"missing Arg-list")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             arg_list_node.parent = None
@@ -850,7 +843,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Arg_list_prime"] and "epsilon" in self.first_sets["Arg_list_prime"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -866,13 +859,13 @@ class Parser:
                 Node("epsilon", arg_list_prime_node)
                 return
             else:
-                self.error(f"Missing Arg-list-prime")
+                self.error(f"missing Arg-list-prime")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             arg_list_prime_node.parent = None
@@ -886,7 +879,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["H"] and "epsilon" in self.first_sets["H"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -905,13 +898,13 @@ class Parser:
                 Node("epsilon", h_node)
                 return
             else:
-                self.error(f"Missing H")
+                self.error(f"missing H")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             h_node.parent = None
@@ -925,7 +918,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Simple_expression_zegond"] and "epsilon" in self.first_sets["Simple_expression_zegond"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -939,13 +932,13 @@ class Parser:
                 Node("epsilon", simple_expression_zegond_node)
                 return
             else:
-                self.error(f"Missing H")
+                self.error(f"missing H")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             simple_expression_zegond_node.parent = None
@@ -959,7 +952,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Simple_expression_prime"] and "epsilon" in self.first_sets["Simple_expression_prime"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -973,13 +966,13 @@ class Parser:
                 Node("epsilon", simple_expression_zegond_node)
                 return
             else:
-                self.error(f"Missing Simple-expression-prime")
+                self.error(f"missing Simple-expression-prime")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             simple_expression_prime_node.parent = None
@@ -993,7 +986,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["C"] and "epsilon" in self.first_sets["C"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -1007,13 +1000,13 @@ class Parser:
                 Node("epsilon", c_node)
                 return
             else:
-                self.error(f"Missing c")
+                self.error(f"missing c")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             c_node.parent = None
@@ -1027,7 +1020,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Relop"] and "epsilon" in self.first_sets["Relop"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -1043,13 +1036,13 @@ class Parser:
                 Node("epsilon", relop_node)
                 return
             else:
-                self.error(f"Missing Relop")
+                self.error(f"missing Relop")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             relop_node.parent = None
@@ -1063,7 +1056,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Additive_expression"] and "epsilon" in self.first_sets["Additive_expression"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -1077,13 +1070,13 @@ class Parser:
                 Node("epsilon", additive_expression_node)
                 return
             else:
-                self.error(f"Missing Additive-expression")
+                self.error(f"missing Additive-expression")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             additive_expression_node.parent = None
@@ -1097,7 +1090,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Additive_expression_prime"] and "epsilon" in self.first_sets["Additive_expression_prime"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -1111,13 +1104,13 @@ class Parser:
                 Node("epsilon", additive_expression_prime_node)
                 return
             else:
-                self.error(f"Missing Additive-expression-prime")
+                self.error(f"missing Additive-expression-prime")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             additive_expression_prime_node.parent = None
@@ -1131,7 +1124,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Additive_expression_zegond"] and "epsilon" in self.first_sets["Additive_expression_zegond"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -1145,13 +1138,13 @@ class Parser:
                 Node("epsilon", additive_expression_prime_node)
                 return
             else:
-                self.error(f"Missing Additive-expression-zegond")
+                self.error(f"missing Additive-expression-zegond")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             additive_expression_zegond_node.parent = None
@@ -1165,7 +1158,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["D"] and "epsilon" in self.first_sets["D"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -1180,13 +1173,13 @@ class Parser:
                 Node("epsilon", d_node)
                 return
             else:
-                self.error(f"Missing D")
+                self.error(f"missing D")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             d_node.parent = None
@@ -1200,7 +1193,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Addop"] and "epsilon" in self.first_sets["Addop"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -1216,13 +1209,13 @@ class Parser:
                 Node("epsilon", addop_node)
                 return
             else:
-                self.error(f"Missing Addop")
+                self.error(f"missing Addop")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             addop_node.parent = None
@@ -1236,7 +1229,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Term"] and "epsilon" in self.first_sets["Term"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -1250,13 +1243,13 @@ class Parser:
                 Node("epsilon", term_node)
                 return
             else:
-                self.error(f"Missing Term")
+                self.error(f"missing Term")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             term_node.parent = None
@@ -1270,7 +1263,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Term_prime"] and "epsilon" in self.first_sets["Term_prime"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -1284,13 +1277,13 @@ class Parser:
                 Node("epsilon", term_prime_node)
                 return
             else:
-                self.error(f"Missing Term-prime")
+                self.error(f"missing Term-prime")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             term_prime_node.parent = None
@@ -1304,7 +1297,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Term_zegond"] and "epsilon" in self.first_sets["Term_zegond"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -1318,13 +1311,13 @@ class Parser:
                 Node("epsilon", term_zegond_node)
                 return
             else:
-                self.error(f"Missing Term-zegond")
+                self.error(f"missing Term-zegond")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             term_zegond_node.parent = None
@@ -1338,7 +1331,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["G"] and "epsilon" in self.first_sets["G"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -1353,13 +1346,13 @@ class Parser:
                 Node("epsilon", g_node)
                 return
             else:
-                self.error(f"Missing G")
+                self.error(f"missing G")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             g_node.parent = None
@@ -1372,7 +1365,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Factor"] and "epsilon" in self.first_sets["Factor"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -1382,7 +1375,7 @@ class Parser:
             if self.match_token("(", factor_node):
                 self.transition_diagram_expression(parent=factor_node)
                 if not self.match_token(")", factor_node):
-                    self.error(f"Missing )")
+                    self.error(f"missing )")
             elif self.match_token("ID", factor_node):
                 self.transition_diagram_var_call_prime(parent=factor_node)
             elif self.match_token("NUM", factor_node):
@@ -1392,13 +1385,13 @@ class Parser:
                 Node("epsilon", factor_node)
                 return
             else:
-                self.error(f"Missing Factor")
+                self.error(f"missing Factor")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             factor_node.parent = None
@@ -1412,7 +1405,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Var_call_prime"] and "epsilon" in self.first_sets["Var_call_prime"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -1422,7 +1415,7 @@ class Parser:
             if self.match_token("(", var_call_prime_node):
                 self.transition_diagram_args(parent=var_call_prime_node)
                 if not self.match_token(")", var_call_prime_node):
-                    self.error(f"Missing )")
+                    self.error(f"missing )")
             else:
                 self.transition_diagram_var_prime(parent=var_call_prime_node)
         elif token0 in self.follow_sets["Var_call_prime"] or token1 in self.follow_sets["Var_call_prime"]:
@@ -1430,13 +1423,13 @@ class Parser:
                 Node("epsilon", var_call_prime_node)
                 return
             else:
-                self.error(f"Missing Var-call-prime")
+                self.error(f"missing Var-call-prime")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             var_call_prime_node.parent = None
@@ -1450,7 +1443,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Var_prime"] and "epsilon" in self.first_sets["Var_prime"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -1460,19 +1453,19 @@ class Parser:
             if self.match_token("[", var_prime_node):
                 self.transition_diagram_expression(parent=var_prime_node)
                 if not self.match_token("]", var_prime_node):
-                    self.error(f"Missing ]")
+                    self.error(f"missing ]")
         elif token0 in self.follow_sets["Var_prime"] or token1 in self.follow_sets["Var_prime"]:
             if "epsilon" in self.first_sets["Var_prime"]:
                 Node("epsilon", var_prime_node)
                 return
             else:
-                self.error(f"Missing Var-prime")
+                self.error(f"missing Var-prime")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             var_prime_node.parent = None
@@ -1486,7 +1479,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Expression"] and "epsilon" in self.first_sets["Expression"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -1503,13 +1496,13 @@ class Parser:
                 Node("epsilon", expression_node)
                 return
             else:
-                self.error(f"Missing Expression")
+                self.error(f"missing Expression")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             expression_node.parent = None
@@ -1523,7 +1516,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Selection_stmt"] and "epsilon" in self.first_sets["Selection_stmt"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -1533,26 +1526,26 @@ class Parser:
             if token1 == "if":
                 self.match_token("if", selection_stmt_node)
                 if not self.match_token("(", selection_stmt_node):
-                    self.error("Missing (")
+                    self.error("missing (")
                 self.transition_diagram_expression(selection_stmt_node)
                 if not self.match_token(")", selection_stmt_node):
-                    self.error("Missing )")
+                    self.error("missing )")
                 self.transition_diagram_statement(selection_stmt_node)
                 if not self.match_token("else", selection_stmt_node):
-                    self.error("Missing else")
+                    self.error("missing else")
                 self.transition_diagram_statement(selection_stmt_node)
         elif token0 in self.follow_sets["Selection_stmt"] or token1 in self.follow_sets["Selection_stmt"]:
             if "epsilon" in self.first_sets["Selection_stmt"]:
                 Node("epsilon", selection_stmt_node)
                 return
             else:
-                self.error(f"Missing Selection-stmt")
+                self.error(f"missing Selection-stmt")
         else:
             
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             selection_stmt_node.parent = None
@@ -1566,7 +1559,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Iteration_stmt"] and "epsilon" in self.first_sets["Iteration_stmt"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -1577,23 +1570,23 @@ class Parser:
                 self.match_token("repeat", iteration_stmt_node)
                 self.transition_diagram_statement(iteration_stmt_node)
                 if not self.match_token("until", iteration_stmt_node):
-                    self.error("Missing until")
+                    self.error("missing until")
                 if not self.match_token("(", iteration_stmt_node):
-                    self.error("Missing (")
+                    self.error("missing (")
                 self.transition_diagram_expression(iteration_stmt_node)
                 if not self.match_token(")", iteration_stmt_node):
-                    self.error("Missing )")
+                    self.error("missing )")
         elif token0 in self.follow_sets["Iteration_stmt"] or token1 in self.follow_sets["Iteration_stmt"]:
             if "epsilon" in self.first_sets["Iteration_stmt"]:
                 Node("epsilon", iteration_stmt_node)
                 return
             else:
-                self.error(f"Missing Iteration-stmt")
+                self.error(f"missing Iteration-stmt")
         else:
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             iteration_stmt_node.parent = None
@@ -1607,7 +1600,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Return_stmt"] and "epsilon" in self.first_sets["Return_stmt"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -1622,12 +1615,12 @@ class Parser:
                 Node("epsilon", return_stmt_node)
                 return
             else:
-                self.error(f"Missing Return-stmt")
+                self.error(f"missing Return-stmt")
         else:
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             return_stmt_node.parent = None
@@ -1641,7 +1634,7 @@ class Parser:
         if token0 == "$" and not ("$" in self.follow_sets["Return_stmt_prime"] and "epsilon" in self.first_sets["Return_stmt_prime"]):
             if not self.grim:
                 self.grim = True
-                self.error("unexpected EOF")
+                self.error("Unexpected EOF")
             return
 
         # add node to tree
@@ -1653,18 +1646,18 @@ class Parser:
             elif token0 in self.first_sets["Expression"] or token1 in self.first_sets["Expression"]:
                 self.transition_diagram_expression(return_stmt_node)
                 if not self.match_token(";", return_stmt_node):
-                    self.error("Missing ;")
+                    self.error("missing ;")
         elif token0 in self.follow_sets["Return_stmt_prime"] or token1 in self.follow_sets["Return_stmt_prime"]:
             if "epsilon" in self.first_sets["Return_stmt_prime"]:
                 Node("epsilon", return_stmt_node)
                 return
             else:
-                self.error(f"Missing Return-stmt-prime")
+                self.error(f"missing Return-stmt-prime")
         else:
             if token0 == "SYMBOL" or token0 == "KEYWORD":
-                self.error(f"Illegal {token1}")
+                self.error(f"illegal {token1}")
             else:
-                self.error(f"Illegal {token0}")
+                self.error(f"illegal {token0}")
             self.scanner.get_next_token()
             # remove node from tree
             return_stmt_node.parent = None

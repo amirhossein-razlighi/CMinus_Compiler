@@ -28,5 +28,4 @@
 #16 : syntax error, illegal ID
 #16 : syntax error, missing ;
 #16 : syntax error, illegal )
-#19 : syntax error, unexpected EOF
-#19 : syntax error, missing }
+#19 : syntax error, Unexpected EOF
