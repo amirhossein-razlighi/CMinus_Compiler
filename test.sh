@@ -20,6 +20,9 @@ for test in $tests; do
 		echo "..."
 	else
 		diff parse_tree.txt $path/parse_tree.txt 
+		if (( $? == 0 )); then
+			echo "PASSED"
+		fi;
 	fi;
 	echo "=========== diff syntax errors ============="
 	lines=$(diff syntax_errors.txt $path/syntax_errors.txt | wc -l)
@@ -28,6 +31,9 @@ for test in $tests; do
 		echo "..."
 	else
 		diff syntax_errors.txt $path/syntax_errors.txt 
+		if (( $? == 0 )); then
+			echo "PASSED"
+		fi;
 	fi;
 	echo ""
 done;
