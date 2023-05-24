@@ -1483,7 +1483,7 @@ class Parser:
         # add node to tree
         node = Node("Var-call-prime", parent=parent)
 
-        if "epsilon" in self.first_sets["Var_call_prime"] or token0 in self.first_sets["Var_call_prime"] or token1 in self.first_sets["Var_call_prime"]:
+        if token1 == ")" or token1 == ";" or token0 in self.first_sets["Var_call_prime"] or token1 in self.first_sets["Var_call_prime"]:
             if self.match_token("(", node):
                 self.transition_diagram_args(parent=node)
                 if not self.match_token(")", node):
