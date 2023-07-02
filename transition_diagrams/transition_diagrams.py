@@ -809,6 +809,10 @@ class Parser:
                 self.match_token("break", node)
                 if not self.match_token(";", node):
                     self.error(f"missing ;")
+
+                # Action: break
+                self.code_generator.break_the_jail()
+
             elif token1 == ";":
                 self.match_token(";", node)
         elif (
@@ -1970,10 +1974,21 @@ class Parser:
                 self.transition_diagram_expression(node)
                 if not self.match_token(")", node):
                     self.error("missing )")
+
+                # Action: save_address
+                self.code_generator.save_address()
+
                 self.transition_diagram_statement(node)
                 if not self.match_token("else", node):
                     self.error("missing else")
+
+                # Action: jpf_save
+                self.code_generator.jpf_save_address()
+
                 self.transition_diagram_statement(node)
+
+                # Action: jp
+                self.code_generator.jp()
         elif (
             token0 in self.follow_sets["Selection_stmt"]
             or token1 in self.follow_sets["Selection_stmt"]
@@ -2016,6 +2031,9 @@ class Parser:
             or token1 in self.first_sets["Iteration_stmt"]
         ):
             if token1 == "repeat":
+                # Action: label
+                self.code_generator.save_address()
+
                 self.match_token("repeat", node)
                 self.transition_diagram_statement(node)
                 if not self.match_token("until", node):
@@ -2025,6 +2043,9 @@ class Parser:
                 self.transition_diagram_expression(node)
                 if not self.match_token(")", node):
                     self.error("missing )")
+
+                # Action: until
+                self.code_generator.until()
         elif (
             token0 in self.follow_sets["Iteration_stmt"]
             or token1 in self.follow_sets["Iteration_stmt"]

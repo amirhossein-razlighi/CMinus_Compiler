@@ -25,6 +25,9 @@ class ProgramBlockEntity:
             "operand2": self.operand2,
             "operand3": self.operand3,
         }
+        if operation == None:
+            print("None")
+            print(self.line_number)
         self.PB.append(entity)
         self.increase_line_number()
         return entity

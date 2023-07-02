@@ -20,6 +20,7 @@ class CodeGenerator:
         self.program_block.create_entity(OPERATION.ASSIGN, 4, Address(0))
         self.program_block.create_entity(OPERATION.JP, Address(2))
         self.token_to_address = {}
+        self.loop_stack = []
 
     def run_routine(self, routine_name, params):
         func_to_call = getattr(self, routine_name)
@@ -87,23 +88,24 @@ class CodeGenerator:
         self.program_block.create_entity(OPERATION.MUL, operand1, operand2, mul_address)
 
     def save_address(self):
-        self.semantic_stack.push(self.program_block.get_current_address())
-        self.program_block.increase_line_number()
+        self.semantic_stack.push(self.program_block.PB_Entity.get_current_line_number())
 
     def jpf_save_address(self):
-        self.program_block.PB_Entity.PB[self.semantic_stack.pop()] = {
+        a = self.semantic_stack.pop()
+
+        self.program_block.PB_Entity.PB[a] = {
             "operation": OPERATION.JPF,
             "operand1": self.semantic_stack.pop(),
-            "operand2": self.program_block.get_current_address() + 1,
+            "operand2": self.program_block.PB_Entity.get_current_line_number() + 1,
             "operand3": None,
         }
-        self.semantic_stack.push(self.program_block.get_current_address())
-        self.program_block.increase_line_number()
+        self.semantic_stack.push(self.program_block.PB_Entity.get_current_line_number())
+        self.program_block.create_entity(None, None)
 
     def jp(self):
         self.program_block.PB_Entity.PB[self.semantic_stack.pop()] = {
             "operation": OPERATION.JP,
-            "operand1": self.program_block.get_current_address(),
+            "operand1": self.program_block.PB_Entity.get_current_line_number(),
             "operand2": None,
             "operand3": None,
         }
@@ -112,7 +114,7 @@ class CodeGenerator:
         self.program_block.PB_Entity.PB[self.semantic_stack.pop()] = {
             "operation": OPERATION.JPF,
             "operand1": self.semantic_stack.pop(),
-            "operand2": self.program_block.get_current_address(),
+            "operand2": self.program_block.PB_Entity.get_current_line_number(),
             "operand3": None,
         }
 
@@ -148,3 +150,21 @@ class CodeGenerator:
             self.semantic_stack.push(
                 Address(array_start_address.address + int(index * 4))
             )
+
+    def until(self):
+        self.program_block.create_entity(
+            OPERATION.JPF, self.semantic_stack.pop(), self.semantic_stack.pop()
+        )
+
+        # handling break statements
+        for line in self.loop_stack:
+            self.program_block.PB_Entity.PB[line] = {
+                "operation": OPERATION.JP,
+                "operand1": self.program_block.PB_Entity.get_current_line_number(),
+                "operand2": None,
+                "operand3": None,
+            }
+
+    def break_the_jail(self):
+        self.loop_stack.append(self.program_block.PB_Entity.get_current_line_number())
+        self.program_block.create_entity(None, None)
