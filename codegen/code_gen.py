@@ -19,6 +19,19 @@ class CodeGenerator:
         # For phase 03
         self.program_block.create_entity(OPERATION.ASSIGN, 4, Address(0))
         self.program_block.create_entity(OPERATION.JP, Address(2))
+        self.token_to_address = {}
+
+    def run_routine(self, routine_name, params):
+        func_to_call = getattr(self, routine_name)
+        if func_to_call is not None and callable(func_to_call):
+            func_to_call(*params)
+        else:
+            raise Exception("Routine not found")
+
+    def get_token_address(self, token):
+        if token not in self.token_to_address:
+            self.token_to_address[token] = self.program_block.get_new_address()
+        return self.token_to_address[token]
 
     def push_id(self, id):
         self.semantic_stack.push(id)

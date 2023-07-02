@@ -30,7 +30,10 @@ class ProgramBlockEntity:
         return entity
 
     def increase_line_number(self):
-        pass
+        self.line_number += 1
+
+    def get_current_line_number(self):
+        return self.line_number
 
 
 class ProgramBlock:
@@ -52,17 +55,17 @@ class ProgramBlock:
 
     def get_new_address(self):
         self.last_address.address += 4
-        return self.last_address
+        return Address(self.last_address.address)
 
     def get_current_address(self, get_value=False):
         if get_value:
             return self.last_address.address
-        return self.last_address
+        return Address(self.last_address.address)
 
     def get_current_temp_address(self, get_value=False):
         if get_value:
             return self.last_temp_address.address
-        return self.last_temp_address
+        return Address(self.last_temp_address.address)
 
     def create_entity(self, operation, operand1, operand2=None, operand3=None):
         return self.PB_Entity.create_entity(operation, operand1, operand2, operand3)

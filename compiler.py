@@ -77,3 +77,6 @@ if __name__ == "__main__":
 
     # Save the errors to file
     save_errors_to_file("./syntax_errors.txt", parser.errors)
+
+    for item in parser.code_generator.program_block.PB_Entity.PB:
+        print(item)

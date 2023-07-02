@@ -16,3 +16,9 @@ class OPERATION(Enum):
 class Address:
     def __init__(self, address):
         self.address = address
+
+    def __str__(self):
+        return str(self.address)
+
+    def __repr__(self):
+        return str(self.address)

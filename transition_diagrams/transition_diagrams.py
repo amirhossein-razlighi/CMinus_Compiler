@@ -15,6 +15,7 @@ class Parser:
         self.tree = None
         self.grim = False
         self.code_generator = CodeGenerator.get_instance()
+        self.routines_to_run = []
 
     def parse(self):
         # call get next token for the first time
@@ -191,9 +192,17 @@ class Parser:
             or token1 in self.first_sets["Declaration_initial"]
         ):
             self.transition_diagram_type_specifier(parent=node)
+
+            _, token, _ = self.scanner.get_current_token()
             matched = self.match_token("ID", node)
             if not matched:
                 self.error(f"missing ID")
+            else:
+                if not token == "main":
+                    self.code_generator.push_id(
+                        self.code_generator.get_token_address(token)
+                    )
+                    self.code_generator.assign_zero()
         elif (
             token0 in self.follow_sets["Declaration_initial"]
             or token1 in self.follow_sets["Declaration_initial"]
