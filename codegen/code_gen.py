@@ -1,16 +1,17 @@
 from typing import Optional
-from Stack import Stack
-from PB import ProgramBlock
-from abstracts import OPERATION, Address
+from .pb import ProgramBlock
+from .stack import Stack
+from .abstracts import Address, OPERATION
 
 
-class Routines:
-    instance: Optional[Routines] = None
+class CodeGenerator:
+    instance: Optional["CodeGenerator"] = None
 
+    @staticmethod
     def get_instance():
-        if Routines.instance is None:
-            Routines.instance = Routines()
-        return Routines.instance
+        if CodeGenerator.instance is None:
+            CodeGenerator.instance = CodeGenerator()
+        return CodeGenerator.instance
 
     def __init__(self, semantic_stack: Stack, program_block: ProgramBlock):
         self.semantic_stack = semantic_stack

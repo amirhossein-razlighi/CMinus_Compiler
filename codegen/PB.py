@@ -1,9 +1,9 @@
 from typing import Optional
-from abstracts import Address
+from .abstracts import Address
 
 
 class ProgramBlockEntity:
-    instance: Optional[ProgramBlockEntity] = None
+    instance: Optional["ProgramBlockEntity"] = None
 
     def get_instance():
         if ProgramBlockEntity.instance is None:
@@ -34,7 +34,7 @@ class ProgramBlockEntity:
 
 
 class ProgramBlock:
-    instance: Optional[ProgramBlock] = None
+    instance: Optional["ProgramBlock"] = None
 
     def get_instance():
         if ProgramBlock.instance is None:

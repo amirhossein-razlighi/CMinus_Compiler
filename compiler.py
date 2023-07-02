@@ -6,7 +6,7 @@ import anytree
 import json
 
 from scanner import Scanner
-from transition_diagrams import Parser
+from transition_diagrams.transition_diagrams import Parser
 
 
 def read_grammar_from_file(json_file_path):

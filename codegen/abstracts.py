@@ -11,8 +11,6 @@ class OPERATION(Enum):
     EQ = 7
     LT = 8
     JPF = 9
-    JP = 10
-    PRINT = 11
 
 
 class Address:
