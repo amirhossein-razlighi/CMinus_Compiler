@@ -1,11 +1,7 @@
 /*===== Sample 1 =====*/
 void main(void){
-	int i;
-	i = 10;	
-	output(i);
-	i= 2 * i;
-	output(i);
-	i=i - 19;
-	i = i * 3 < 15 + 5;
-	output(i);
+	int a[2];
+	int b[3];
+	int c;
+	b = a + b;
 }

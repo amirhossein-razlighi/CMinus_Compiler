@@ -40,14 +40,26 @@ class CodeGenerator:
     def push_id(self, id):
         self.semantic_stack.push(id)
 
-    def assign(self):
+    def assign(self, is_array=False, array_index=None):
         source = self.semantic_stack.pop()
         target = self.semantic_stack.pop()
-        self.program_block.create_entity(OPERATION.ASSIGN, source, target)
 
-    def assign_zero(self):
+        if is_array:
+            self.program_block.create_entity(
+                OPERATION.ASSIGN, source, target + array_index * 4
+            )
+        else:
+            self.program_block.create_entity(OPERATION.ASSIGN, source, target)
+
+    def assign_zero(self, is_array=False, array_size=None):
         target = self.semantic_stack.pop()
+        print(f"target: {target}")
         self.program_block.create_entity(OPERATION.ASSIGN, 0, target)
+        if is_array:
+            for i in range(array_size - 1):
+                self.program_block.create_entity(
+                    OPERATION.ASSIGN, 0, self.program_block.get_new_address()
+                )
 
     def push_const(self, const):
         self.semantic_stack.push(const)

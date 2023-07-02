@@ -203,8 +203,6 @@ class Parser:
                     self.code_generator.push_id(
                         self.code_generator.get_token_address(token)
                     )
-                    # Action: assign_zero
-                    self.code_generator.assign_zero()
         elif (
             token0 in self.follow_sets["Declaration_initial"]
             or token1 in self.follow_sets["Declaration_initial"]
@@ -301,14 +299,20 @@ class Parser:
         ):
             if token1 == ";":
                 self.match_token(";", node)
+                # Action: assign_zero
+                self.code_generator.assign_zero()
             elif token1 == "[":
                 self.match_token("[", node)
+                size = int(self.scanner.get_current_token()[1])
                 if not self.match_token("NUM", node):
                     self.error(f"missing NUM")
                 if not self.match_token("]", node):
                     self.error(f"missing ]")
                 if not self.match_token(";", node):
                     self.error(f"missing ;")
+
+                # Action: assign_zero
+                self.code_generator.assign_zero(is_array=True, array_size=size)
         elif (
             token0 in self.follow_sets["Var_declaration_prime"]
             or token1 in self.follow_sets["Var_declaration_prime"]
