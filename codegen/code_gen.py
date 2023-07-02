@@ -134,3 +134,8 @@ class CodeGenerator:
         self.program_block.create_entity(
             OPERATION.EQ, operand1, operand2, equals_address
         )
+
+    def array_access(self):
+        index = self.semantic_stack.pop()
+        array_start_address = self.semantic_stack.pop()
+        self.semantic_stack.push(Address(array_start_address.address + int(index * 4)))

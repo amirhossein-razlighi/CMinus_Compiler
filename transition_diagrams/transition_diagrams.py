@@ -299,8 +299,10 @@ class Parser:
         ):
             if token1 == ";":
                 self.match_token(";", node)
+
                 # Action: assign_zero
                 self.code_generator.assign_zero()
+
             elif token1 == "[":
                 self.match_token("[", node)
                 size = int(self.scanner.get_current_token()[1])
@@ -855,13 +857,19 @@ class Parser:
             if token1 == "=":
                 self.match_token("=", node)
                 self.transition_diagram_expression(parent=node)
+
                 # Action: assign
                 self.code_generator.assign()
+
             elif token1 == "[":
                 self.match_token("[", node)
                 self.transition_diagram_expression(parent=node)
                 if not self.match_token("]", node):
                     self.error(f"missing ]")
+
+                # Action: array_access
+                self.code_generator.array_access()
+
                 self.transition_diagram_h(parent=node)
             else:
                 self.transition_diagram_simple_expression_prime(parent=node)
