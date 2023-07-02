@@ -63,3 +63,6 @@ class ProgramBlock:
         if get_value:
             return self.last_temp_address.address
         return self.last_temp_address
+
+    def create_entity(self, operation, operand1, operand2=None, operand3=None):
+        return self.PB_Entity.create_entity(operation, operand1, operand2, operand3)

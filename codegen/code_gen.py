@@ -13,9 +13,9 @@ class CodeGenerator:
             CodeGenerator.instance = CodeGenerator()
         return CodeGenerator.instance
 
-    def __init__(self, semantic_stack: Stack, program_block: ProgramBlock):
-        self.semantic_stack = semantic_stack
-        self.program_block = program_block
+    def __init__(self):
+        self.semantic_stack = Stack.get_instance()
+        self.program_block = ProgramBlock.get_instance()
         # For phase 03
         self.program_block.create_entity(OPERATION.ASSIGN, 4, Address(0))
         self.program_block.create_entity(OPERATION.JP, Address(2))
