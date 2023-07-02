@@ -1,4 +1,5 @@
 from typing import Optional
+from abstracts import Address
 
 
 class ProgramBlockEntity:
@@ -42,3 +43,23 @@ class ProgramBlock:
 
     def __init__(self):
         self.PB_Entity = ProgramBlockEntity.get_instance()
+        self.last_temp_address = Address(500 - 4)
+        self.last_address = Address(100 - 4)
+
+    def get_new_temp_address(self):
+        self.last_temp_address.address += 4
+        return self.last_temp_address
+
+    def get_new_address(self):
+        self.last_address.address += 4
+        return self.last_address
+
+    def get_current_address(self, get_value=False):
+        if get_value:
+            return self.last_address.address
+        return self.last_address
+
+    def get_current_temp_address(self, get_value=False):
+        if get_value:
+            return self.last_temp_address.address
+        return self.last_temp_address
