@@ -34,7 +34,47 @@ Program
 │   │               │       └── Declaration-list
 │   │               │           └── epsilon
 │   │               ├── Statement-list
-│   │               │   └── epsilon
+│   │               │   ├── Statement
+│   │               │   │   └── Expression-stmt
+│   │               │   │       ├── Expression
+│   │               │   │       │   ├── (ID, a)
+│   │               │   │       │   └── B
+│   │               │   │       │       ├── (SYMBOL, =)
+│   │               │   │       │       └── Expression
+│   │               │   │       │           └── Simple-expression-zegond
+│   │               │   │       │               ├── Additive-expression-zegond
+│   │               │   │       │               │   ├── Term-zegond
+│   │               │   │       │               │   │   ├── Factor-zegond
+│   │               │   │       │               │   │   │   └── (NUM, 10)
+│   │               │   │       │               │   │   └── G
+│   │               │   │       │               │   │       └── epsilon
+│   │               │   │       │               │   └── D
+│   │               │   │       │               │       └── epsilon
+│   │               │   │       │               └── C
+│   │               │   │       │                   └── epsilon
+│   │               │   │       └── (SYMBOL, ;)
+│   │               │   └── Statement-list
+│   │               │       ├── Statement
+│   │               │       │   └── Expression-stmt
+│   │               │       │       ├── Expression
+│   │               │       │       │   ├── (ID, b)
+│   │               │       │       │   └── B
+│   │               │       │       │       ├── (SYMBOL, =)
+│   │               │       │       │       └── Expression
+│   │               │       │       │           └── Simple-expression-zegond
+│   │               │       │       │               ├── Additive-expression-zegond
+│   │               │       │       │               │   ├── Term-zegond
+│   │               │       │       │               │   │   ├── Factor-zegond
+│   │               │       │       │               │   │   │   └── (NUM, 5)
+│   │               │       │       │               │   │   └── G
+│   │               │       │       │               │   │       └── epsilon
+│   │               │       │       │               │   └── D
+│   │               │       │       │               │       └── epsilon
+│   │               │       │       │               └── C
+│   │               │       │       │                   └── epsilon
+│   │               │       │       └── (SYMBOL, ;)
+│   │               │       └── Statement-list
+│   │               │           └── epsilon
 │   │               └── (SYMBOL, })
 │   └── Declaration-list
 │       └── epsilon
