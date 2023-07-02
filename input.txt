@@ -1,11 +1,11 @@
-/*==== sample S1  ====*/
-
+/*===== Sample 1 =====*/
 void main(void){
-	int a;	
-	int c;
-	int b;
-	a = 5;
-	b = a + 1;
-    c = b + a;
-	output(c);
+	int i;
+	i = 10;	
+	output(i);
+	i= 2 * i;
+	output(i);
+	i=i - 19;
+	i = i * 3 < 15 + 5;
+	output(i);
 }

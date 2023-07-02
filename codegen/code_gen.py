@@ -71,11 +71,9 @@ class CodeGenerator:
     def mul(self):
         operand2 = self.semantic_stack.pop()
         operand1 = self.semantic_stack.pop()
-        mul_ = operand1 * operand2
-        self.semantic_stack.push(mul_)
-        self.program_block.create_entity(
-            OPERATION.MUL, operand1, operand2, self.program_block.get_new_temp_address()
-        )
+        mul_address = self.program_block.get_new_temp_address()
+        self.semantic_stack.push(mul_address)
+        self.program_block.create_entity(OPERATION.MUL, operand1, operand2, mul_address)
 
     def save_address(self):
         self.semantic_stack.push(self.program_block.get_current_address())
@@ -106,3 +104,21 @@ class CodeGenerator:
             "operand2": self.program_block.get_current_address(),
             "operand3": None,
         }
+
+    def less_than(self):
+        operand2 = self.semantic_stack.pop()
+        operand1 = self.semantic_stack.pop()
+        less_than_address = self.program_block.get_new_temp_address()
+        self.semantic_stack.push(less_than_address)
+        self.program_block.create_entity(
+            OPERATION.LT, operand1, operand2, less_than_address
+        )
+
+    def equals(self):
+        operand2 = self.semantic_stack.pop()
+        operand1 = self.semantic_stack.pop()
+        equals_address = self.program_block.get_new_temp_address()
+        self.semantic_stack.push(equals_address)
+        self.program_block.create_entity(
+            OPERATION.EQ, operand1, operand2, equals_address
+        )

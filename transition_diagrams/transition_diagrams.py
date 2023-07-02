@@ -1268,8 +1268,19 @@ class Parser:
         node = Node("C", parent=parent)
 
         if token0 in self.first_sets["C"] or token1 in self.first_sets["C"]:
+            is_lt = False
+            if token1 == "<":
+                is_lt = True
+
             self.transition_diagram_relop(parent=node)
             self.transition_diagram_additive_expression(parent=node)
+
+            # Action: ReLOP
+            if is_lt:
+                self.code_generator.less_than()
+            else:
+                self.code_generator.equals()
+
         elif token0 in self.follow_sets["C"] or token1 in self.follow_sets["C"]:
             if "epsilon" in self.first_sets["C"]:
                 Node("epsilon", node)
@@ -1691,6 +1702,10 @@ class Parser:
         if token0 in self.first_sets["G"] or token1 in self.first_sets["G"]:
             if self.match_token("*", node):
                 self.transition_diagram_factor(parent=node)
+
+                # Action: MUL
+                self.code_generator.mul()
+
                 self.transition_diagram_g(parent=node)
         elif token0 in self.follow_sets["G"] or token1 in self.follow_sets["G"]:
             if "epsilon" in self.first_sets["G"]:
