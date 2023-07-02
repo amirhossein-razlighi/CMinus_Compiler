@@ -1860,6 +1860,9 @@ class Parser:
                 self.transition_diagram_expression(parent=node)
                 if not self.match_token("]", node):
                     self.error(f"missing ]")
+
+                # Action: array access
+                self.code_generator.array_access()
         elif (
             token0 in self.follow_sets["Var_prime"]
             or token1 in self.follow_sets["Var_prime"]

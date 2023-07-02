@@ -53,7 +53,6 @@ class CodeGenerator:
 
     def assign_zero(self, is_array=False, array_size=None):
         target = self.semantic_stack.pop()
-        print(f"target: {target}")
         self.program_block.create_entity(OPERATION.ASSIGN, 0, target)
         if is_array:
             for i in range(array_size - 1):
@@ -138,4 +137,7 @@ class CodeGenerator:
     def array_access(self):
         index = self.semantic_stack.pop()
         array_start_address = self.semantic_stack.pop()
+        if isinstance(index, Address):
+            index = index.address
+        print(f"ARRAY_ACCESS: {array_start_address.address}, {index}")
         self.semantic_stack.push(Address(array_start_address.address + int(index * 4)))

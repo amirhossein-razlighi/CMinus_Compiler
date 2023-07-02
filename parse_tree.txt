@@ -34,7 +34,7 @@ Program
 │   │               │       │   └── Declaration-prime
 │   │               │       │       └── Var-declaration-prime
 │   │               │       │           ├── (SYMBOL, [)
-│   │               │       │           ├── (NUM, 3)
+│   │               │       │           ├── (NUM, 2)
 │   │               │       │           ├── (SYMBOL, ])
 │   │               │       │           └── (SYMBOL, ;)
 │   │               │       └── Declaration-list
@@ -42,12 +42,21 @@ Program
 │   │               │           │   ├── Declaration-initial
 │   │               │           │   │   ├── Type-specifier
 │   │               │           │   │   │   └── (KEYWORD, int)
-│   │               │           │   │   └── (ID, c)
+│   │               │           │   │   └── (ID, i)
 │   │               │           │   └── Declaration-prime
 │   │               │           │       └── Var-declaration-prime
 │   │               │           │           └── (SYMBOL, ;)
 │   │               │           └── Declaration-list
-│   │               │               └── epsilon
+│   │               │               ├── Declaration
+│   │               │               │   ├── Declaration-initial
+│   │               │               │   │   ├── Type-specifier
+│   │               │               │   │   │   └── (KEYWORD, int)
+│   │               │               │   │   └── (ID, k)
+│   │               │               │   └── Declaration-prime
+│   │               │               │       └── Var-declaration-prime
+│   │               │               │           └── (SYMBOL, ;)
+│   │               │               └── Declaration-list
+│   │               │                   └── epsilon
 │   │               ├── Statement-list
 │   │               │   ├── Statement
 │   │               │   │   └── Expression-stmt
@@ -60,7 +69,7 @@ Program
 │   │               │   │       │       │       ├── Additive-expression-zegond
 │   │               │   │       │       │       │   ├── Term-zegond
 │   │               │   │       │       │       │   │   ├── Factor-zegond
-│   │               │   │       │       │       │   │   │   └── (NUM, 2)
+│   │               │   │       │       │       │   │   │   └── (NUM, 0)
 │   │               │   │       │       │       │   │   └── G
 │   │               │   │       │       │       │   │       └── epsilon
 │   │               │   │       │       │       │   └── D
@@ -71,33 +80,192 @@ Program
 │   │               │   │       │       └── H
 │   │               │   │       │           ├── (SYMBOL, =)
 │   │               │   │       │           └── Expression
-│   │               │   │       │               ├── (ID, a)
-│   │               │   │       │               └── B
-│   │               │   │       │                   └── Simple-expression-prime
-│   │               │   │       │                       ├── Additive-expression-prime
-│   │               │   │       │                       │   ├── Term-prime
-│   │               │   │       │                       │   │   ├── Factor-prime
-│   │               │   │       │                       │   │   │   └── epsilon
-│   │               │   │       │                       │   │   └── G
-│   │               │   │       │                       │   │       └── epsilon
-│   │               │   │       │                       │   └── D
-│   │               │   │       │                       │       ├── Addop
-│   │               │   │       │                       │       │   └── (SYMBOL, +)
-│   │               │   │       │                       │       ├── Term
-│   │               │   │       │                       │       │   ├── Factor
-│   │               │   │       │                       │       │   │   ├── (ID, b)
-│   │               │   │       │                       │       │   │   └── Var-call-prime
-│   │               │   │       │                       │       │   │       └── Var-prime
-│   │               │   │       │                       │       │   │           └── epsilon
-│   │               │   │       │                       │       │   └── G
-│   │               │   │       │                       │       │       └── epsilon
-│   │               │   │       │                       │       └── D
-│   │               │   │       │                       │           └── epsilon
-│   │               │   │       │                       └── C
-│   │               │   │       │                           └── epsilon
+│   │               │   │       │               └── Simple-expression-zegond
+│   │               │   │       │                   ├── Additive-expression-zegond
+│   │               │   │       │                   │   ├── Term-zegond
+│   │               │   │       │                   │   │   ├── Factor-zegond
+│   │               │   │       │                   │   │   │   └── (NUM, 4)
+│   │               │   │       │                   │   │   └── G
+│   │               │   │       │                   │   │       └── epsilon
+│   │               │   │       │                   │   └── D
+│   │               │   │       │                   │       └── epsilon
+│   │               │   │       │                   └── C
+│   │               │   │       │                       └── epsilon
 │   │               │   │       └── (SYMBOL, ;)
 │   │               │   └── Statement-list
-│   │               │       └── epsilon
+│   │               │       ├── Statement
+│   │               │       │   └── Expression-stmt
+│   │               │       │       ├── Expression
+│   │               │       │       │   ├── (ID, b)
+│   │               │       │       │   └── B
+│   │               │       │       │       ├── (SYMBOL, [)
+│   │               │       │       │       ├── Expression
+│   │               │       │       │       │   └── Simple-expression-zegond
+│   │               │       │       │       │       ├── Additive-expression-zegond
+│   │               │       │       │       │       │   ├── Term-zegond
+│   │               │       │       │       │       │   │   ├── Factor-zegond
+│   │               │       │       │       │       │   │   │   └── (NUM, 1)
+│   │               │       │       │       │       │   │   └── G
+│   │               │       │       │       │       │   │       └── epsilon
+│   │               │       │       │       │       │   └── D
+│   │               │       │       │       │       │       └── epsilon
+│   │               │       │       │       │       └── C
+│   │               │       │       │       │           └── epsilon
+│   │               │       │       │       ├── (SYMBOL, ])
+│   │               │       │       │       └── H
+│   │               │       │       │           ├── (SYMBOL, =)
+│   │               │       │       │           └── Expression
+│   │               │       │       │               └── Simple-expression-zegond
+│   │               │       │       │                   ├── Additive-expression-zegond
+│   │               │       │       │                   │   ├── Term-zegond
+│   │               │       │       │                   │   │   ├── Factor-zegond
+│   │               │       │       │                   │   │   │   └── (NUM, 5)
+│   │               │       │       │                   │   │   └── G
+│   │               │       │       │                   │   │       └── epsilon
+│   │               │       │       │                   │   └── D
+│   │               │       │       │                   │       └── epsilon
+│   │               │       │       │                   └── C
+│   │               │       │       │                       └── epsilon
+│   │               │       │       └── (SYMBOL, ;)
+│   │               │       └── Statement-list
+│   │               │           ├── Statement
+│   │               │           │   └── Expression-stmt
+│   │               │           │       ├── Expression
+│   │               │           │       │   ├── (ID, a)
+│   │               │           │       │   └── B
+│   │               │           │       │       ├── (SYMBOL, [)
+│   │               │           │       │       ├── Expression
+│   │               │           │       │       │   └── Simple-expression-zegond
+│   │               │           │       │       │       ├── Additive-expression-zegond
+│   │               │           │       │       │       │   ├── Term-zegond
+│   │               │           │       │       │       │   │   ├── Factor-zegond
+│   │               │           │       │       │       │   │   │   └── (NUM, 0)
+│   │               │           │       │       │       │   │   └── G
+│   │               │           │       │       │       │   │       └── epsilon
+│   │               │           │       │       │       │   └── D
+│   │               │           │       │       │       │       └── epsilon
+│   │               │           │       │       │       └── C
+│   │               │           │       │       │           └── epsilon
+│   │               │           │       │       ├── (SYMBOL, ])
+│   │               │           │       │       └── H
+│   │               │           │       │           ├── (SYMBOL, =)
+│   │               │           │       │           └── Expression
+│   │               │           │       │               └── Simple-expression-zegond
+│   │               │           │       │                   ├── Additive-expression-zegond
+│   │               │           │       │                   │   ├── Term-zegond
+│   │               │           │       │                   │   │   ├── Factor-zegond
+│   │               │           │       │                   │   │   │   └── (NUM, 2)
+│   │               │           │       │                   │   │   └── G
+│   │               │           │       │                   │   │       └── epsilon
+│   │               │           │       │                   │   └── D
+│   │               │           │       │                   │       └── epsilon
+│   │               │           │       │                   └── C
+│   │               │           │       │                       └── epsilon
+│   │               │           │       └── (SYMBOL, ;)
+│   │               │           └── Statement-list
+│   │               │               ├── Statement
+│   │               │               │   └── Expression-stmt
+│   │               │               │       ├── Expression
+│   │               │               │       │   ├── (ID, a)
+│   │               │               │       │   └── B
+│   │               │               │       │       ├── (SYMBOL, [)
+│   │               │               │       │       ├── Expression
+│   │               │               │       │       │   └── Simple-expression-zegond
+│   │               │               │       │       │       ├── Additive-expression-zegond
+│   │               │               │       │       │       │   ├── Term-zegond
+│   │               │               │       │       │       │   │   ├── Factor-zegond
+│   │               │               │       │       │       │   │   │   └── (NUM, 1)
+│   │               │               │       │       │       │   │   └── G
+│   │               │               │       │       │       │   │       └── epsilon
+│   │               │               │       │       │       │   └── D
+│   │               │               │       │       │       │       └── epsilon
+│   │               │               │       │       │       └── C
+│   │               │               │       │       │           └── epsilon
+│   │               │               │       │       ├── (SYMBOL, ])
+│   │               │               │       │       └── H
+│   │               │               │       │           ├── (SYMBOL, =)
+│   │               │               │       │           └── Expression
+│   │               │               │       │               └── Simple-expression-zegond
+│   │               │               │       │                   ├── Additive-expression-zegond
+│   │               │               │       │                   │   ├── Term-zegond
+│   │               │               │       │                   │   │   ├── Factor-zegond
+│   │               │               │       │                   │   │   │   └── (NUM, 3)
+│   │               │               │       │                   │   │   └── G
+│   │               │               │       │                   │   │       └── epsilon
+│   │               │               │       │                   │   └── D
+│   │               │               │       │                   │       └── epsilon
+│   │               │               │       │                   └── C
+│   │               │               │       │                       └── epsilon
+│   │               │               │       └── (SYMBOL, ;)
+│   │               │               └── Statement-list
+│   │               │                   ├── Statement
+│   │               │                   │   └── Expression-stmt
+│   │               │                   │       ├── Expression
+│   │               │                   │       │   ├── (ID, a)
+│   │               │                   │       │   └── B
+│   │               │                   │       │       ├── (SYMBOL, [)
+│   │               │                   │       │       ├── Expression
+│   │               │                   │       │       │   └── Simple-expression-zegond
+│   │               │                   │       │       │       ├── Additive-expression-zegond
+│   │               │                   │       │       │       │   ├── Term-zegond
+│   │               │                   │       │       │       │   │   ├── Factor-zegond
+│   │               │                   │       │       │       │   │   │   └── (NUM, 0)
+│   │               │                   │       │       │       │   │   └── G
+│   │               │                   │       │       │       │   │       └── epsilon
+│   │               │                   │       │       │       │   └── D
+│   │               │                   │       │       │       │       └── epsilon
+│   │               │                   │       │       │       └── C
+│   │               │                   │       │       │           └── epsilon
+│   │               │                   │       │       ├── (SYMBOL, ])
+│   │               │                   │       │       └── H
+│   │               │                   │       │           ├── (SYMBOL, =)
+│   │               │                   │       │           └── Expression
+│   │               │                   │       │               ├── (ID, a)
+│   │               │                   │       │               └── B
+│   │               │                   │       │                   ├── (SYMBOL, [)
+│   │               │                   │       │                   ├── Expression
+│   │               │                   │       │                   │   └── Simple-expression-zegond
+│   │               │                   │       │                   │       ├── Additive-expression-zegond
+│   │               │                   │       │                   │       │   ├── Term-zegond
+│   │               │                   │       │                   │       │   │   ├── Factor-zegond
+│   │               │                   │       │                   │       │   │   │   └── (NUM, 0)
+│   │               │                   │       │                   │       │   │   └── G
+│   │               │                   │       │                   │       │   │       └── epsilon
+│   │               │                   │       │                   │       │   └── D
+│   │               │                   │       │                   │       │       └── epsilon
+│   │               │                   │       │                   │       └── C
+│   │               │                   │       │                   │           └── epsilon
+│   │               │                   │       │                   ├── (SYMBOL, ])
+│   │               │                   │       │                   └── H
+│   │               │                   │       │                       ├── G
+│   │               │                   │       │                       │   ├── (SYMBOL, *)
+│   │               │                   │       │                       │   ├── Factor
+│   │               │                   │       │                       │   │   ├── (ID, b)
+│   │               │                   │       │                       │   │   └── Var-call-prime
+│   │               │                   │       │                       │   │       └── Var-prime
+│   │               │                   │       │                       │   │           ├── (SYMBOL, [)
+│   │               │                   │       │                       │   │           ├── Expression
+│   │               │                   │       │                       │   │           │   └── Simple-expression-zegond
+│   │               │                   │       │                       │   │           │       ├── Additive-expression-zegond
+│   │               │                   │       │                       │   │           │       │   ├── Term-zegond
+│   │               │                   │       │                       │   │           │       │   │   ├── Factor-zegond
+│   │               │                   │       │                       │   │           │       │   │   │   └── (NUM, 0)
+│   │               │                   │       │                       │   │           │       │   │   └── G
+│   │               │                   │       │                       │   │           │       │   │       └── epsilon
+│   │               │                   │       │                       │   │           │       │   └── D
+│   │               │                   │       │                       │   │           │       │       └── epsilon
+│   │               │                   │       │                       │   │           │       └── C
+│   │               │                   │       │                       │   │           │           └── epsilon
+│   │               │                   │       │                       │   │           └── (SYMBOL, ])
+│   │               │                   │       │                       │   └── G
+│   │               │                   │       │                       │       └── epsilon
+│   │               │                   │       │                       ├── D
+│   │               │                   │       │                       │   └── epsilon
+│   │               │                   │       │                       └── C
+│   │               │                   │       │                           └── epsilon
+│   │               │                   │       └── (SYMBOL, ;)
+│   │               │                   └── Statement-list
+│   │               │                       └── epsilon
 │   │               └── (SYMBOL, })
 │   └── Declaration-list
 │       └── epsilon
