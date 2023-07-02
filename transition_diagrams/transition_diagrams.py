@@ -199,9 +199,11 @@ class Parser:
                 self.error(f"missing ID")
             else:
                 if not token == "main":
+                    # Action: PID
                     self.code_generator.push_id(
                         self.code_generator.get_token_address(token)
                     )
+                    # Action: assign_zero
                     self.code_generator.assign_zero()
         elif (
             token0 in self.follow_sets["Declaration_initial"]
@@ -849,6 +851,8 @@ class Parser:
             if token1 == "=":
                 self.match_token("=", node)
                 self.transition_diagram_expression(parent=node)
+                # Action: assign
+                self.code_generator.assign()
             elif token1 == "[":
                 self.match_token("[", node)
                 self.transition_diagram_expression(parent=node)
@@ -951,7 +955,11 @@ class Parser:
                 if not self.match_token(")", node):
                     self.error(f"missing )")
             elif token0 == "NUM":
+                _, token, _ = self.scanner.get_current_token()
                 self.match_token("NUM", node)
+                token = float(token)
+                # Action: PID (const)
+                self.code_generator.push_const(token)
         elif (
             token0 in self.follow_sets["Factor_zegond"]
             or token1 in self.follow_sets["Factor_zegond"]
@@ -1126,6 +1134,8 @@ class Parser:
             if token1 == "=":
                 self.match_token("=", node)
                 self.transition_diagram_expression(parent=node)
+                # Action: assign
+                self.code_generator.assign()
             else:
                 self.transition_diagram_g(parent=node)
                 self.transition_diagram_d(parent=node)
@@ -1703,8 +1713,14 @@ class Parser:
                 if not self.match_token(")", node):
                     self.error(f"missing )")
             elif self.match_token("ID", node):
+                # Action: PID
+                self.code_generator.push_id(
+                    self.code_generator.get_token_address(token1)
+                )
                 self.transition_diagram_var_call_prime(parent=node)
             elif self.match_token("NUM", node):
+                # Action: PID (const)
+                self.code_generator.push_const(token1)
                 pass
         elif (
             token0 in self.follow_sets["Factor"] or token1 in self.follow_sets["Factor"]
@@ -1847,7 +1863,12 @@ class Parser:
             ):
                 self.transition_diagram_simple_expression_zegond(node)
             elif token0 == "ID":
+                _, token, _ = self.scanner.get_current_token()
                 self.match_token("ID", node)
+                # Action: PID
+                self.code_generator.push_id(
+                    self.code_generator.get_token_address(token)
+                )
                 self.transition_diagram_b(node)
         elif (
             token0 in self.follow_sets["Expression"]
