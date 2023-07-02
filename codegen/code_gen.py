@@ -28,6 +28,10 @@ class CodeGenerator:
         else:
             raise Exception("Routine not found")
 
+    def output(self):
+        operand = self.semantic_stack.pop()
+        self.program_block.create_entity(OPERATION.PRINT, operand)
+
     def get_token_address(self, token):
         if token not in self.token_to_address:
             self.token_to_address[token] = self.program_block.get_new_address()

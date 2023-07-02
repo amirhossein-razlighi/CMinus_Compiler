@@ -1000,6 +1000,12 @@ class Parser:
 
         if token0 in self.first_sets["Args"] or token1 in self.first_sets["Args"]:
             self.transition_diagram_arg_list(parent=node)
+
+            # Action: Output
+            if self.handle_output:
+                self.code_generator.output()
+                self.handle_output = False
+
         elif token0 in self.follow_sets["Args"] or token1 in self.follow_sets["Args"]:
             if "epsilon" in self.first_sets["Args"]:
                 Node("epsilon", node)
@@ -1877,10 +1883,14 @@ class Parser:
             elif token0 == "ID":
                 _, token, _ = self.scanner.get_current_token()
                 self.match_token("ID", node)
-                # Action: PID
-                self.code_generator.push_id(
-                    self.code_generator.get_token_address(token)
-                )
+
+                if token == "output":
+                    self.handle_output = True
+                else:
+                    # Action: PID
+                    self.code_generator.push_id(
+                        self.code_generator.get_token_address(token)
+                    )
                 self.transition_diagram_b(node)
         elif (
             token0 in self.follow_sets["Expression"]
