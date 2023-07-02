@@ -2,15 +2,15 @@ from enum import Enum
 
 
 class OPERATION(Enum):
-    ASSIGN = 1
-    JP = 2
-    ADD = 3
-    SUB = 4
-    MUL = 5
-    PRINT = 6
-    EQ = 7
-    LT = 8
-    JPF = 9
+    ASSIGN = "ASSIGN"
+    JP = "JP"
+    ADD = "ADD"
+    SUB = "SUB"
+    MUL = "MULT"
+    PRINT = "PRINT"
+    EQ = "EQ"
+    LT = "LT"
+    JPF = "JPF"
 
 
 class Address:

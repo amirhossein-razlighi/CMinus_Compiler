@@ -973,7 +973,7 @@ class Parser:
             elif token0 == "NUM":
                 _, token, _ = self.scanner.get_current_token()
                 self.match_token("NUM", node)
-                token = float(token)
+                token = int(token) #float
                 # Action: PID (const)
                 self.code_generator.push_const(token)
         elif (

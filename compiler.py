@@ -7,6 +7,7 @@ import json
 
 from scanner import Scanner
 from transition_diagrams.transition_diagrams import Parser
+from codegen.abstracts import Address
 
 
 def read_grammar_from_file(json_file_path):
@@ -38,6 +39,40 @@ def save_errors_to_file(file_address, errors):
                 # error_msg = error_msg[0].lower() + " " + error_msg[1]
                 error_str = "#" + str(error[0]) + " : syntax error, " + error_msg
                 f.write("{}\n".format(error_str))
+
+
+def convert_address(inp):
+    if isinstance(inp, Address):
+        return inp.address
+    elif not str(inp).startswith("@"):
+        if not str(inp).startswith("#"):
+            return "#" + str(inp)
+    return inp
+
+
+def save_code_gen_result(file_address: str, parser: Parser):
+    with open(file_address, "w") as f:
+        i = 0
+        for item in parser.code_generator.program_block.PB_Entity.PB:
+            operation, operand1, operand2, operand3 = item.values()
+            print(i, end="\t", file=f)
+            print("(", end="", file=f)
+            print(operation.value, ",", end=" ", file=f)
+
+            operand1 = convert_address(operand1)
+            print(operand1, ",", end=" ", file=f)
+            if operand2 != None:
+                operand2 = convert_address(operand2)
+                print(operand2, ",", end=" ", file=f)
+            else:
+                print(",", end=" ", file=f)
+            if operand3 != None:
+                operand3 = convert_address(operand3)
+                print(operand3, end=")", file=f)
+            else:
+                print(")", end="", file=f)
+            print("", file=f)
+            i += 1
 
 
 if __name__ == "__main__":
@@ -78,7 +113,5 @@ if __name__ == "__main__":
     # Save the errors to file
     save_errors_to_file("./syntax_errors.txt", parser.errors)
 
-    i = 0
-    for item in parser.code_generator.program_block.PB_Entity.PB:
-        print(i, item)
-        i += 1
+    # Save the code generation result to file
+    save_code_gen_result("./output.txt", parser)
