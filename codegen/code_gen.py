@@ -1,6 +1,7 @@
 from typing import Optional
 from Stack import Stack
 from PB import ProgramBlock
+from abstracts import OPERATION, Address
 
 
 class Routines:
@@ -14,6 +15,9 @@ class Routines:
     def __init__(self, semantic_stack: Stack, program_block: ProgramBlock):
         self.semantic_stack = semantic_stack
         self.program_block = program_block
+        # For phase 03
+        self.program_block.create_entity(OPERATION.ASSIGN, 4, Address(0))
+        self.program_block.create_entity(OPERATION.JP, Address(2))
 
     def push_id(self, id):
         self.semantic_stack.push(id)
@@ -21,7 +25,11 @@ class Routines:
     def assign(self):
         source = self.semantic_stack.pop()
         target = self.semantic_stack.pop()
-        self.program_block.create_entity("assign", source, target)
+        self.program_block.create_entity(OPERATION.ASSIGN, source, target)
+
+    def assign_zero(self):
+        target = self.semantic_stack.pop()
+        self.program_block.create_entity(OPERATION.ASSIGN, 0, target)
 
     def push_const(self, const):
         self.semantic_stack.push(const)
@@ -29,20 +37,29 @@ class Routines:
     def add(self):
         operand2 = self.semantic_stack.pop()
         operand1 = self.semantic_stack.pop()
-        self.semantic_stack.push(operand1 + operand2)
-        self.program_block.create_entity("add", operand1, operand2)
+        sum_ = operand1 + operand2
+        self.semantic_stack.push(sum_)
+        self.program_block.create_entity(
+            OPERATION.ADD, operand1, operand2, self.program_block.get_new_temp_address()
+        )
 
     def sub(self):
         operand2 = self.semantic_stack.pop()
         operand1 = self.semantic_stack.pop()
-        self.semantic_stack.push(operand1 - operand2)
-        self.program_block.create_entity("sub", operand1, operand2)
+        subtract_ = operand1 - operand2
+        self.semantic_stack.push(subtract_)
+        self.program_block.create_entity(
+            OPERATION.SUB, operand1, operand2, self.program_block.get_new_temp_address()
+        )
 
     def mul(self):
         operand2 = self.semantic_stack.pop()
         operand1 = self.semantic_stack.pop()
-        self.semantic_stack.push(operand1 * operand2)
-        self.program_block.create_entity("mul", operand1, operand2)
+        mul_ = operand1 * operand2
+        self.semantic_stack.push(mul_)
+        self.program_block.create_entity(
+            OPERATION.MUL, operand1, operand2, self.program_block.get_new_temp_address()
+        )
 
     def save_address(self):
         self.semantic_stack.push(self.program_block.get_current_address())
@@ -50,7 +67,7 @@ class Routines:
 
     def jpf_save_address(self):
         self.program_block.PB_Entity.PB[self.semantic_stack.pop()] = {
-            "operation": "jpf",
+            "operation": OPERATION.JPF,
             "operand1": self.semantic_stack.pop(),
             "operand2": self.program_block.get_current_address() + 1,
             "operand3": None,
@@ -60,7 +77,7 @@ class Routines:
 
     def jp(self):
         self.program_block.PB_Entity.PB[self.semantic_stack.pop()] = {
-            "operation": "jp",
+            "operation": OPERATION.JP,
             "operand1": self.program_block.get_current_address(),
             "operand2": None,
             "operand3": None,
@@ -68,7 +85,7 @@ class Routines:
 
     def jpf(self):
         self.program_block.PB_Entity.PB[self.semantic_stack.pop()] = {
-            "operation": "jpf",
+            "operation": OPERATION.JPF,
             "operand1": self.semantic_stack.pop(),
             "operand2": self.program_block.get_current_address(),
             "operand3": None,
