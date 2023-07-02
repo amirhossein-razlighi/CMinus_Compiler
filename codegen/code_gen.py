@@ -51,19 +51,17 @@ class CodeGenerator:
     def add(self):
         operand2 = self.semantic_stack.pop()
         operand1 = self.semantic_stack.pop()
-        sum_ = operand1 + operand2
-        self.semantic_stack.push(sum_)
-        self.program_block.create_entity(
-            OPERATION.ADD, operand1, operand2, self.program_block.get_new_temp_address()
-        )
+        sum_address = self.program_block.get_new_temp_address()
+        self.semantic_stack.push(sum_address)
+        self.program_block.create_entity(OPERATION.ADD, operand1, operand2, sum_address)
 
     def sub(self):
         operand2 = self.semantic_stack.pop()
         operand1 = self.semantic_stack.pop()
-        subtract_ = operand1 - operand2
-        self.semantic_stack.push(subtract_)
+        subtract_address = self.program_block.get_new_temp_address()
+        self.semantic_stack.push(subtract_address)
         self.program_block.create_entity(
-            OPERATION.SUB, operand1, operand2, self.program_block.get_new_temp_address()
+            OPERATION.SUB, operand1, operand2, subtract_address
         )
 
     def mul(self):

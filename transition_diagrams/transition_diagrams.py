@@ -1468,8 +1468,20 @@ class Parser:
         node = Node("D", parent=parent)
 
         if token0 in self.first_sets["D"] or token1 in self.first_sets["D"]:
+            if token1 == "+":
+                is_plus = True
+            else:
+                is_plus = False
+
             self.transition_diagram_addop(parent=node)
             self.transition_diagram_term(parent=node)
+
+            # Action: ADD OR SUB
+            if is_plus:
+                self.code_generator.add()
+            else:
+                self.code_generator.sub()
+
             self.transition_diagram_d(parent=node)
         elif token0 in self.follow_sets["D"] or token1 in self.follow_sets["D"]:
             if "epsilon" in self.first_sets["D"]:

@@ -51,7 +51,7 @@ class ProgramBlock:
 
     def get_new_temp_address(self):
         self.last_temp_address.address += 4
-        return self.last_temp_address
+        return Address(self.last_temp_address.address)
 
     def get_new_address(self):
         self.last_address.address += 4
