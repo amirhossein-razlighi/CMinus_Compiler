@@ -1,4 +1,12 @@
+from typing import Optional
 class Stack:
+    instance: Optional[Stack] = None
+
+    def get_instance():
+        if Stack.instance is None:
+            Stack.instance = Stack()
+        return Stack.instance
+
     def __init__(self):
         self.items = []
 
