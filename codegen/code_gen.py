@@ -16,9 +16,11 @@ class CodeGenerator:
     def __init__(self):
         self.semantic_stack = Stack.get_instance()
         self.program_block = ProgramBlock.get_instance()
-        # For phase 03
+        # for phase 3
         self.program_block.create_entity(OPERATION.ASSIGN, 4, Address(0))
-        self.program_block.create_entity(OPERATION.JP, Address(2))
+        self.save_address()
+        self.program_block.create_entity(OPERATION.JP, None)
+
         self.token_to_address = {}
         self.loop_stack = []
 
@@ -92,7 +94,6 @@ class CodeGenerator:
 
     def jpf_save_address(self):
         a = self.semantic_stack.pop()
-
         self.program_block.PB_Entity.PB[a] = {
             "operation": OPERATION.JPF,
             "operand1": self.semantic_stack.pop(),
@@ -103,12 +104,23 @@ class CodeGenerator:
         self.program_block.create_entity(None, None)
 
     def jp(self):
-        self.program_block.PB_Entity.PB[self.semantic_stack.pop()] = {
+        a = self.semantic_stack.pop()
+        self.program_block.PB_Entity.PB[a] = {
             "operation": OPERATION.JP,
             "operand1": self.program_block.PB_Entity.get_current_line_number(),
             "operand2": None,
             "operand3": None,
         }
+
+    def main_jp(self):
+        a = self.semantic_stack.pop()
+        if a == 1:
+            self.program_block.PB_Entity.PB[a] = {
+                "operation": OPERATION.JP,
+                "operand1": self.program_block.PB_Entity.get_current_line_number(),
+                "operand2": None,
+                "operand3": None,
+            }
 
     def jpf(self):
         self.program_block.PB_Entity.PB[self.semantic_stack.pop()] = {
@@ -166,5 +178,7 @@ class CodeGenerator:
             }
 
     def break_the_jail(self):
-        self.loop_stack.append(self.program_block.PB_Entity.get_current_line_number())
+        self.loop_stack.append(
+            self.program_block.PB_Entity.get_current_line_number() + 1
+        )
         self.program_block.create_entity(None, None)

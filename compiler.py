@@ -43,7 +43,8 @@ def save_errors_to_file(file_address, errors):
 
 def convert_address(inp):
     if isinstance(inp, Address):
-        return inp.address
+        return str(inp)
+
     elif not str(inp).startswith("@"):
         if not str(inp).startswith("#"):
             return "#" + str(inp)
@@ -57,9 +58,12 @@ def save_code_gen_result(file_address: str, parser: Parser):
             operation, operand1, operand2, operand3 = item.values()
             print(i, end="\t", file=f)
             print("(", end="", file=f)
+            if operation == None:
+                continue
             print(operation.value, ",", end=" ", file=f)
 
-            operand1 = convert_address(operand1)
+            if operation.value != "JP":
+                operand1 = convert_address(operand1)
             print(operand1, ",", end=" ", file=f)
             if operand2 != None:
                 operand2 = convert_address(operand2)

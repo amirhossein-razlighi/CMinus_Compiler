@@ -203,6 +203,8 @@ class Parser:
                     self.code_generator.push_id(
                         self.code_generator.get_token_address(token)
                     )
+                else:
+                    self.code_generator.main_jp()
         elif (
             token0 in self.follow_sets["Declaration_initial"]
             or token1 in self.follow_sets["Declaration_initial"]
@@ -973,7 +975,7 @@ class Parser:
             elif token0 == "NUM":
                 _, token, _ = self.scanner.get_current_token()
                 self.match_token("NUM", node)
-                token = int(token) #float
+                token = int(token)  # float
                 # Action: PID (const)
                 self.code_generator.push_const(token)
         elif (
