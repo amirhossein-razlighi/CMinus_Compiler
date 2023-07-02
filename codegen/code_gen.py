@@ -138,6 +138,13 @@ class CodeGenerator:
         index = self.semantic_stack.pop()
         array_start_address = self.semantic_stack.pop()
         if isinstance(index, Address):
-            index = index.address
-        print(f"ARRAY_ACCESS: {array_start_address.address}, {index}")
-        self.semantic_stack.push(Address(array_start_address.address + int(index * 4)))
+            tmp_1 = self.program_block.get_new_temp_address()
+            self.program_block.create_entity(OPERATION.MUL, index, 4, tmp_1)
+            self.program_block.create_entity(
+                OPERATION.ADD, "#" + str(array_start_address.address), tmp_1, tmp_1
+            )
+            self.semantic_stack.push(Address(tmp_1).set_indirect())
+        else:
+            self.semantic_stack.push(
+                Address(array_start_address.address + int(index * 4))
+            )

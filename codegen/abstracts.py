@@ -14,11 +14,21 @@ class OPERATION(Enum):
 
 
 class Address:
+    is_indirect = False
+
     def __init__(self, address):
         self.address = address
 
     def __str__(self):
-        return str(self.address)
+        if self.is_indirect:
+            return f"@{self.address}"
+        return f"{self.address}"
 
     def __repr__(self):
-        return str(self.address)
+        if self.is_indirect:
+            return f"@{self.address}"
+        return f"{self.address}"
+
+    def set_indirect(self):
+        self.is_indirect = True
+        return self
