@@ -110,7 +110,6 @@ class CodeGenerator:
         self.semantic_stack.push(self.program_block.PB_Entity.get_current_line_number())
         self.program_block.create_entity(None, None)
 
-
     def jp(self):
         a = self.semantic_stack.pop()
 
@@ -196,3 +195,12 @@ class CodeGenerator:
             self.program_block.PB_Entity.get_current_line_number() + 1
         )
         self.program_block.create_entity(None, None)
+
+    @staticmethod
+    def debug(self, name_of_caller):
+        print(name_of_caller)
+        print("Semantic Stack:")
+        print(self.semantic_stack.items)
+        print("Program Block:")
+        for item in self.program_block.PB_Entity.PB:
+            print(item)

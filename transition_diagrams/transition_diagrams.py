@@ -16,6 +16,7 @@ class Parser:
         self.grim = False
         self.code_generator = CodeGenerator.get_instance()
         self.routines_to_run = []
+        self.handle_output = False
 
     def parse(self):
         # call get next token for the first time
