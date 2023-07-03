@@ -103,6 +103,18 @@ class CodeGenerator:
         self.semantic_stack.push(self.program_block.PB_Entity.get_current_line_number())
         self.program_block.create_entity(None, None)
 
+    def else_save_address(self):
+        a = self.semantic_stack.pop()
+        self.program_block.PB_Entity.PB[a] = {
+            "operation": OPERATION.JPF,
+            "operand1": self.semantic_stack.pop(),
+            "operand2": self.program_block.PB_Entity.get_current_line_number() + 1,
+            "operand3": None,
+        }
+        self.semantic_stack.push(self.program_block.PB_Entity.get_current_line_number())
+        self.program_block.create_entity(None, None)
+        self.program_block.create_entity(None, None)
+
     def jp(self):
         a = self.semantic_stack.pop()
         self.program_block.PB_Entity.PB[a] = {

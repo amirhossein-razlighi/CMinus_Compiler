@@ -1979,13 +1979,15 @@ class Parser:
 
                 # Action: save_address
                 self.code_generator.save_address()
+                self.code_generator.program_block.create_entity(None, None)
 
                 self.transition_diagram_statement(node)
+
                 if not self.match_token("else", node):
                     self.error("missing else")
 
                 # Action: jpf_save
-                self.code_generator.jpf_save_address()
+                self.code_generator.else_save_address()
 
                 self.transition_diagram_statement(node)
 
@@ -2033,7 +2035,7 @@ class Parser:
             or token1 in self.first_sets["Iteration_stmt"]
         ):
             if token1 == "repeat":
-                # Action: label
+                # Action: save_address
                 self.code_generator.save_address()
 
                 self.match_token("repeat", node)

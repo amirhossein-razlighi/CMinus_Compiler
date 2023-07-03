@@ -1,26 +1,11 @@
-/*==== Sample T4 ====*/
-int a;
-int b;
-
-void main(void) {
-    int c;
-    int d;
-    a = c = 1;
-    d = b = 3;
-    output(a);
-    output(b);
-    output(c * 3);
-    c = a * 17 < 15 + 3;
-    output(c * 0);
-    output(c);
-    output(d < 3);
-    output(d - 8 < 3);
-    output(1 * 2);
-    if(a < 2){
-	output(0-1);
-    }else {
-	output(0-2);
-    }
-
-
+/*===== Sample 1 =====*/
+void main(void){
+	int i;
+	i = 10;	
+	output(i);
+	i= 2 * i;
+	output(i);
+	i=i - 19;
+	i = i * 3 < 15 + 5;
+	output(i);
 }

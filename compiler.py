@@ -56,10 +56,10 @@ def save_code_gen_result(file_address: str, parser: Parser):
         i = 0
         for item in parser.code_generator.program_block.PB_Entity.PB:
             operation, operand1, operand2, operand3 = item.values()
-            print(i, end="\t", file=f)
-            print("(", end="", file=f)
             if operation == None:
                 continue
+            print(i, end="\t", file=f)
+            print("(", end="", file=f)
             print(operation.value, ",", end=" ", file=f)
 
             if operation.value != "JP":
