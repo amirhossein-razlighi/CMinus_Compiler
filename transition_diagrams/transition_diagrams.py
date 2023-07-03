@@ -19,6 +19,8 @@ class Parser:
         self.routines_to_run = []
         self.handle_output = False
         self.func_name = None
+        self.function_to_call = None
+        self.calling_function = False
 
     def parse(self):
         # call get next token for the first time
@@ -402,8 +404,7 @@ class Parser:
                     if param == self.func_name:
                         break
 
-                    addr = record.get_new_address()
-                    record.add_parameter(param, addr)
+                    record.add_parameter(param)
 
                 while (peek := self.code_generator.semantic_stack.peek()) in [
                     "vars",
@@ -991,6 +992,11 @@ class Parser:
                 self.transition_diagram_args(parent=node)
                 if not self.match_token(")", node):
                     self.error(f"missing )")
+
+                # Action: call
+                if self.calling_function:
+                    self.code_generator.call(self.function_to_call, self.func_name)
+                    self.calling_function = False
         elif (
             token0 in self.follow_sets["Factor_prime"]
             or token1 in self.follow_sets["Factor_prime"]
@@ -1082,6 +1088,9 @@ class Parser:
 
         # add node to tree
         node = Node("Args", parent=parent)
+
+        # Action: push args
+        self.code_generator.semantic_stack.push("args")
 
         if token0 in self.first_sets["Args"] or token1 in self.first_sets["Args"]:
             self.transition_diagram_arg_list(parent=node)
@@ -1833,8 +1842,13 @@ class Parser:
             elif self.match_token("ID", node):
                 # Action: PID
                 record = self.code_generator.get_current_activation()
-                record.add_variable(token1)
-                self.code_generator.push_id(record.get_variable_address(token1))
+                is_param = token1 in record.parameters
+                if is_param:
+                    address = record.get_parameter_address(token1)
+                else:
+                    address = record.get_variable_address(token1)
+
+                self.code_generator.semantic_stack.push(address)
 
                 self.transition_diagram_var_call_prime(parent=node)
             elif self.match_token("NUM", node):
@@ -1992,9 +2006,22 @@ class Parser:
                     self.handle_output = True
                 else:
                     # Action: PID
-                    record = self.code_generator.activations.get_current_activation()
-                    record.add_variable(token1)
-                    self.code_generator.push_id(record.get_variable_address(token1))
+                    if record := self.code_generator.activations.get_activation(token):
+                        # we are calling a function, not a variable!
+                        self.calling_function = True
+                        self.function_to_call = token
+                    else:
+                        # Action: PID
+                        record = (
+                            self.code_generator.activations.get_current_activation()
+                        )
+                        is_param = token1 in record.parameters
+                        if is_param:
+                            address = record.get_parameter_address(token1)
+                        else:
+                            address = record.get_variable_address(token1)
+
+                        self.code_generator.semantic_stack.push(address)
 
                 self.transition_diagram_b(node)
         elif (

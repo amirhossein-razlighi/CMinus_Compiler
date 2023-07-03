@@ -2,7 +2,7 @@ int a;
 
 void hi(int a) {
     int y;
-    output(a);
+    a = a + 1;
 }
 
 void main(void) {

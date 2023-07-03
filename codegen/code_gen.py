@@ -204,6 +204,27 @@ class CodeGenerator:
         self.func_address += 400
         return self.func_address
 
+    def call(self, function_to_call, caller_func):
+        if function_to_call == None:
+            return
+        self.activations.get_activation(
+            function_to_call
+        ).caller = self.activations.get_activation(caller_func)
+
+        record = self.activations.get_activation(function_to_call)
+
+        i = 0
+        lst = list(record.parameters.values())
+        while (item := self.semantic_stack.pop()) != "args":
+            param = lst[i]
+
+            self.program_block.create_entity(
+                OPERATION.ASSIGN,
+                Address(item).set_immediate(),
+                Address(param.address).set_direct(),
+            )
+            i += 1
+
     @staticmethod
     def debug(self, name_of_caller):
         print(name_of_caller)

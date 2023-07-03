@@ -15,6 +15,7 @@ class OPERATION(Enum):
 
 class Address:
     is_indirect = False
+    is_immediate = False
 
     def __init__(self, address):
         self.address = address
@@ -22,15 +23,27 @@ class Address:
     def __str__(self):
         if self.is_indirect:
             return f"@{self.address}"
+        elif self.is_immediate:
+            return f"#{self.address}"
         return f"{self.address}"
 
     def __repr__(self):
         if self.is_indirect:
             return f"@{self.address}"
+        elif self.is_immediate:
+            return f"#{self.address}"
         return f"{self.address}"
 
     def set_indirect(self):
         self.is_indirect = True
+        return self
+
+    def set_immediate(self):
+        self.is_immediate = True
+        return self
+
+    def set_direct(self):
+        self.is_indirect = False
         return self
 
     def __add__(self, other):
