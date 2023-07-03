@@ -46,6 +46,8 @@ class CodeGenerator:
     def assign(self, is_array=False, array_index=None):
         source = self.semantic_stack.pop()
         target = self.semantic_stack.pop()
+        if target == "=":
+            target = self.semantic_stack.pop()
 
         if is_array:
             self.program_block.create_entity(
