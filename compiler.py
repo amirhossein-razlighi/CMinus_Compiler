@@ -7,7 +7,7 @@ import json
 
 from scanner import Scanner
 from transition_diagrams.transition_diagrams import Parser
-from codegen.abstracts import Address
+from codegen.abstracts import Address, OPERATION
 
 
 def read_grammar_from_file(json_file_path):
@@ -57,13 +57,18 @@ def save_code_gen_result(file_address: str, parser: Parser):
         for item in parser.code_generator.program_block.PB_Entity.PB:
             operation, operand1, operand2, operand3 = item.values()
             if operation == None:
-                continue
+                operation = OPERATION.ASSIGN
+                operand1 = 0
+                operand2 = 0
             print(i, end="\t", file=f)
             print("(", end="", file=f)
-            print(operation.value, ",", end=" ", file=f)
+            if operation == None:
+                print(operation, ",", end=" ", file=f)
+            else:
+                print(operation.value, ",", end=" ", file=f)
+                if operation.value != "JP":
+                    operand1 = convert_address(operand1)
 
-            if operation.value != "JP":
-                operand1 = convert_address(operand1)
             print(operand1, ",", end=" ", file=f)
             if operand2 != None:
                 operand2 = convert_address(operand2)

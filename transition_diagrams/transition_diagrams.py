@@ -805,8 +805,18 @@ class Parser:
                 or token1 in self.first_sets["Expression"]
             ):
                 self.transition_diagram_expression(parent=node)
+
+                # Action: pop
+                if (
+                    len(self.code_generator.semantic_stack.items) >= 2
+                    and self.code_generator.semantic_stack.items[-2] == "="
+                ):
+                    self.code_generator.semantic_stack.pop()
+                    self.code_generator.semantic_stack.pop()
+
                 if not self.match_token(";", node):
                     self.error(f"missing ;")
+
             elif token1 == "break":
                 self.match_token("break", node)
                 if not self.match_token(";", node):
@@ -1979,7 +1989,6 @@ class Parser:
 
                 # Action: save_address
                 self.code_generator.save_address()
-                self.code_generator.program_block.create_entity(None, None)
 
                 self.transition_diagram_statement(node)
 
@@ -1987,7 +1996,7 @@ class Parser:
                     self.error("missing else")
 
                 # Action: jpf_save
-                self.code_generator.else_save_address()
+                self.code_generator.jpf_save_address()
 
                 self.transition_diagram_statement(node)
 
@@ -2037,6 +2046,7 @@ class Parser:
             if token1 == "repeat":
                 # Action: save_address
                 self.code_generator.save_address()
+                self.code_generator.program_block.create_entity(None, None)
 
                 self.match_token("repeat", node)
                 self.transition_diagram_statement(node)

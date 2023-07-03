@@ -54,6 +54,10 @@ class CodeGenerator:
         else:
             self.program_block.create_entity(OPERATION.ASSIGN, source, target)
 
+        # push the result of assign, back in the stack
+        self.semantic_stack.push("=")
+        self.semantic_stack.push(target)
+
     def assign_zero(self, is_array=False, array_size=None):
         target = self.semantic_stack.pop()
         self.program_block.create_entity(OPERATION.ASSIGN, 0, target)
@@ -91,6 +95,7 @@ class CodeGenerator:
 
     def save_address(self):
         self.semantic_stack.push(self.program_block.PB_Entity.get_current_line_number())
+        self.program_block.create_entity(None, None)
 
     def jpf_save_address(self):
         a = self.semantic_stack.pop()
@@ -103,20 +108,10 @@ class CodeGenerator:
         self.semantic_stack.push(self.program_block.PB_Entity.get_current_line_number())
         self.program_block.create_entity(None, None)
 
-    def else_save_address(self):
-        a = self.semantic_stack.pop()
-        self.program_block.PB_Entity.PB[a] = {
-            "operation": OPERATION.JPF,
-            "operand1": self.semantic_stack.pop(),
-            "operand2": self.program_block.PB_Entity.get_current_line_number() + 1,
-            "operand3": None,
-        }
-        self.semantic_stack.push(self.program_block.PB_Entity.get_current_line_number())
-        self.program_block.create_entity(None, None)
-        self.program_block.create_entity(None, None)
 
     def jp(self):
         a = self.semantic_stack.pop()
+
         self.program_block.PB_Entity.PB[a] = {
             "operation": OPERATION.JP,
             "operand1": self.program_block.PB_Entity.get_current_line_number(),
@@ -176,8 +171,13 @@ class CodeGenerator:
             )
 
     def until(self):
+        condition = self.semantic_stack.pop()
+        where_to_go = self.semantic_stack.pop()
+
         self.program_block.create_entity(
-            OPERATION.JPF, self.semantic_stack.pop(), self.semantic_stack.pop()
+            OPERATION.JPF,
+            condition,
+            where_to_go,
         )
 
         # handling break statements
