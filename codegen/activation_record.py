@@ -15,6 +15,7 @@ class ActivationRecord:
         self.return_value_address = None
         self.last_var_address = Address(100 - 4)
         self.last_temp_address = Address(500 - 4)
+        self.start_line = None
 
     def add_parameter(self, name, address: Address = None):
         if name not in self.parameters:
@@ -73,6 +74,9 @@ class ActivationRecord:
     def get_new_temp_address(self):
         self.last_temp_address.address += 4
         return self.start_address + self.last_temp_address.address
+
+    def set_return_address(self, address: Address):
+        self.return_address = address
 
     def __str__(self):
         return f"AR: {self.name} | start_address: {self.start_address} | caller: {self.caller} | variables: {self.variables} | parameters: {self.parameters} | temp_variables: {self.temp_variables} | return_value: {self.return_value} | return_address: {self.return_address} | return_type: {self.return_type} | return_value_address: {self.return_value_address}"

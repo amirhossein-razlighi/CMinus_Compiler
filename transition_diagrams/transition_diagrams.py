@@ -390,6 +390,10 @@ class Parser:
                 record = AR(
                     self.func_name, self.code_generator.get_new_function_address(), None
                 )
+                record.start_line = (
+                    self.code_generator.program_block.PB_Entity.get_current_line_number()
+                )
+
                 self.code_generator.activations.add_func(
                     record.name, record.start_address
                 )
@@ -416,6 +420,10 @@ class Parser:
                     self.code_generator.main_jp()
 
                 self.transition_diagram_compound_stmt(parent=node)
+
+                # Action: return to caller
+                self.code_generator.return_to_caller(record)
+
         elif (
             token0 in self.follow_sets["Fun_declaration_prime"]
             or token1 in self.follow_sets["Fun_declaration_prime"]

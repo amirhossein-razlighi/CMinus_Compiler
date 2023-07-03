@@ -212,6 +212,7 @@ class CodeGenerator:
         ).caller = self.activations.get_activation(caller_func)
 
         record = self.activations.get_activation(function_to_call)
+        record.caller = self.activations.get_activation(caller_func)
 
         i = 0
         lst = list(record.parameters.values())
@@ -225,6 +226,17 @@ class CodeGenerator:
             )
             i += 1
 
+        self.program_block.create_entity(OPERATION.JP, record.start_line, None)
+        self.program_block.create_entity(None, None)
+        record.set_return_address(
+            Address(self.program_block.PB_Entity.get_current_line_number())
+        )
+
+    def return_to_caller(self, record):
+        # self.program_block.create_entity(OPERATION.JP, record.return_address)
+        # self.program_block.create_entity(None, None, None, record)
+        # TODO: debug
+        
     @staticmethod
     def debug(self, name_of_caller):
         print(name_of_caller)
