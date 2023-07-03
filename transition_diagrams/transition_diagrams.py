@@ -2,6 +2,7 @@ from scanner import Scanner
 from anytree import Node, RenderTree
 import sys
 from codegen.code_gen import CodeGenerator
+from codegen.activation_record import ActivationRecord as AR
 
 
 class Parser:
@@ -17,6 +18,7 @@ class Parser:
         self.code_generator = CodeGenerator.get_instance()
         self.routines_to_run = []
         self.handle_output = False
+        self.func_name = None
 
     def parse(self):
         # call get next token for the first time
@@ -95,6 +97,8 @@ class Parser:
 
         # add node to tree
         node = Node("Declaration-list", parent=parent)
+
+        self.code_generator.semantic_stack.push("vars")
 
         if (
             token0 in self.first_sets["Declaration_list"]
@@ -199,13 +203,11 @@ class Parser:
             if not matched:
                 self.error(f"missing ID")
             else:
-                if not token == "main":
-                    # Action: PID
-                    self.code_generator.push_id(
-                        self.code_generator.get_token_address(token)
-                    )
-                else:
-                    self.code_generator.main_jp()
+                self.func_name = token
+
+                # Action: PID
+                self.code_generator.push_id(token)
+
         elif (
             token0 in self.follow_sets["Declaration_initial"]
             or token1 in self.follow_sets["Declaration_initial"]
@@ -304,6 +306,12 @@ class Parser:
                 self.match_token(";", node)
 
                 # Action: assign_zero
+                record = self.code_generator.activations.get_current_activation()
+                token = self.code_generator.semantic_stack.pop()
+                address = record.get_new_address()
+                record.add_variable(token, address)
+                self.code_generator.semantic_stack.push(address)
+
                 self.code_generator.assign_zero()
 
             elif token1 == "[":
@@ -317,6 +325,12 @@ class Parser:
                     self.error(f"missing ;")
 
                 # Action: assign_zero
+                record = self.code_generator.activations.get_current_activation()
+                token = self.code_generator.semantic_stack.pop()
+                address = record.get_new_address(array_size=size)
+                record.add_variable(token, address)
+                self.code_generator.semantic_stack.push(address)
+
                 self.code_generator.assign_zero(is_array=True, array_size=size)
         elif (
             token0 in self.follow_sets["Var_declaration_prime"]
@@ -362,10 +376,44 @@ class Parser:
             or token1 in self.first_sets["Fun_declaration_prime"]
         ):
             if token1 == "(":
+                # Action: push params
+                self.code_generator.push_id("params")
+
                 self.match_token("(", node)
                 self.transition_diagram_params(parent=node)
                 if not self.match_token(")", node):
                     self.error(f"missing )")
+
+                # Action: create activation record
+                record = AR(
+                    self.func_name, self.code_generator.get_new_function_address(), None
+                )
+                self.code_generator.activations.add_func(
+                    record.name, record.start_address
+                )
+                self.code_generator.activations.push_activation(record)
+
+                # Action: add params to activation record
+                while True:
+                    param = self.code_generator.semantic_stack.pop()
+                    if param == "void" or param == "params":
+                        continue
+
+                    if param == self.func_name:
+                        break
+
+                    addr = record.get_new_address()
+                    record.add_parameter(param, addr)
+
+                while (peek := self.code_generator.semantic_stack.peek()) in [
+                    "vars",
+                    "params",
+                ]:
+                    self.code_generator.semantic_stack.pop()
+
+                if self.func_name == "main":
+                    self.code_generator.main_jp()
+
                 self.transition_diagram_compound_stmt(parent=node)
         elif (
             token0 in self.follow_sets["Fun_declaration_prime"]
@@ -454,11 +502,19 @@ class Parser:
         if token0 in self.first_sets["Params"] or token1 in self.first_sets["Params"]:
             if token1 == "int":
                 self.match_token("int", node)
+
+                _, token, _ = self.scanner.get_current_token()
+                # Action: Push ID
+                self.code_generator.push_id(token)
+
                 if not self.match_token("ID", node):
                     self.error(f"missing ID")
                 self.transition_diagram_param_prime(parent=node)
                 self.transition_diagram_param_list(parent=node)
             elif token1 == "void":
+                # Action: push void
+                self.code_generator.push_id("void")
+
                 self.match_token("void", node)
         elif (
             token0 in self.follow_sets["Params"] or token1 in self.follow_sets["Params"]
@@ -1776,9 +1832,10 @@ class Parser:
                     self.error(f"missing )")
             elif self.match_token("ID", node):
                 # Action: PID
-                self.code_generator.push_id(
-                    self.code_generator.get_token_address(token1)
-                )
+                record = self.code_generator.get_current_activation()
+                record.add_variable(token1)
+                self.code_generator.push_id(record.get_variable_address(token1))
+
                 self.transition_diagram_var_call_prime(parent=node)
             elif self.match_token("NUM", node):
                 # Action: PID (const)
@@ -1935,9 +1992,10 @@ class Parser:
                     self.handle_output = True
                 else:
                     # Action: PID
-                    self.code_generator.push_id(
-                        self.code_generator.get_token_address(token)
-                    )
+                    record = self.code_generator.activations.get_current_activation()
+                    record.add_variable(token1)
+                    self.code_generator.push_id(record.get_variable_address(token1))
+
                 self.transition_diagram_b(node)
         elif (
             token0 in self.follow_sets["Expression"]

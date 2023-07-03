@@ -14,10 +14,13 @@ class Stack:
 
     def push(self, item):
         self.items.append(item)
+        print(self.items)
 
     def pop(self):
         if len(self.items) > 0:
-            return self.items.pop()
+            item = self.items.pop()
+            print(self.items)
+            return item
         else:
             return None
 

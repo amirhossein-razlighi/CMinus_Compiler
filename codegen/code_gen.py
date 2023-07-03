@@ -2,6 +2,7 @@ from typing import Optional
 from .pb import ProgramBlock
 from .stack import Stack
 from .abstracts import Address, OPERATION
+from .activations import Activations
 
 
 class CodeGenerator:
@@ -23,6 +24,8 @@ class CodeGenerator:
 
         self.token_to_address = {}
         self.loop_stack = []
+        self.activations: Activations = Activations.get_instance()
+        self.func_address = Address(0 - 300)
 
     def run_routine(self, routine_name, params):
         func_to_call = getattr(self, routine_name)
@@ -129,6 +132,7 @@ class CodeGenerator:
                 "operand2": None,
                 "operand3": None,
             }
+        print("a", a)
 
     def jpf(self):
         self.program_block.PB_Entity.PB[self.semantic_stack.pop()] = {
@@ -195,6 +199,10 @@ class CodeGenerator:
             self.program_block.PB_Entity.get_current_line_number() + 1
         )
         self.program_block.create_entity(None, None)
+
+    def get_new_function_address(self):
+        self.func_address += 400
+        return self.func_address
 
     @staticmethod
     def debug(self, name_of_caller):
