@@ -32,3 +32,8 @@ class Address:
     def set_indirect(self):
         self.is_indirect = True
         return self
+
+    def __add__(self, other):
+        if isinstance(other, Address):
+            return Address(self.address + other.address)
+        return Address(self.address + other)
