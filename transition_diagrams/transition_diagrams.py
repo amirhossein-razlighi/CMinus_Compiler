@@ -433,7 +433,6 @@ class Parser:
                 # Action: return to caller
                 self.code_generator.return_to_caller(record)
 
-
         elif (
             token0 in self.follow_sets["Fun_declaration_prime"]
             or token1 in self.follow_sets["Fun_declaration_prime"]
@@ -1069,7 +1068,7 @@ class Parser:
                 token = int(token)  # float
                 # Action: PID (const)
                 self.code_generator.push_const(token)
-                record = self.code_generator.activations.get_current_activation()
+                # record = self.code_generator.activations.get_current_activation()
 
                 # if self.is_returning:
                 #     record.return_value = Address(token).set_immediate()
@@ -2266,8 +2265,17 @@ class Parser:
                     self.error("missing ;")
 
                 record = self.code_generator.activations.get_current_activation()
+
                 if self.is_returning:
-                    record.return_value = self.code_generator.semantic_stack.pop()
+                    if record.return_address is None:
+                        record.return_address = record.get_new_address()
+
+                    self.code_generator.program_block.create_entity(
+                        OPERATION.ASSIGN,
+                        self.code_generator.semantic_stack.pop(),
+                        record.return_address,
+                    )
+
                 self.is_returning = False
         elif (
             token0 in self.follow_sets["Return_stmt_prime"]

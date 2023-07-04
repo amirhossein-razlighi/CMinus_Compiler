@@ -232,9 +232,6 @@ class CodeGenerator:
             return
 
         record = self.activations.get_activation(function_to_call)
-        # record = ActivationRecord("sample", None, None)
-        # record = record.set_all_equal_to_another(record_origin)
-        # self.activations.push_activation(record)
 
         record.caller = self.activations.get_activation(caller_func)
 
@@ -259,16 +256,17 @@ class CodeGenerator:
 
         self.program_block.create_entity(OPERATION.JP, record.start_line, None)
         self.program_block.create_entity(None, None)
-        record.set_return_address(
-            Address(self.program_block.PB_Entity.get_current_line_number())
-        )
-        self.semantic_stack.push(record.return_value)
+
         self.program_block.PB_Entity.PB[record.last_line] = {
             "operation": OPERATION.JP,
             "operand1": self.program_block.PB_Entity.get_current_line_number() - 1,
             "operand2": None,
             "operand3": None,
         }
+
+        self.semantic_stack.push(record.return_address)
+        if record.return_address is None:
+            record.return_address = record.get_new_address()
 
     def return_to_caller(self, record):
         self.program_block.create_entity(OPERATION.JP, None)
