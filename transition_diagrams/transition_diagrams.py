@@ -340,7 +340,9 @@ class Parser:
                 record.add_variable(token, address)
                 self.code_generator.semantic_stack.push(address)
 
-                self.code_generator.assign_zero(is_array=True, array_size=size, record=record)
+                self.code_generator.assign_zero(
+                    is_array=True, array_size=size, record=record
+                )
         elif (
             token0 in self.follow_sets["Var_declaration_prime"]
             or token1 in self.follow_sets["Var_declaration_prime"]
@@ -430,6 +432,7 @@ class Parser:
 
                 # Action: return to caller
                 self.code_generator.return_to_caller(record)
+
 
         elif (
             token0 in self.follow_sets["Fun_declaration_prime"]
@@ -1068,8 +1071,8 @@ class Parser:
                 self.code_generator.push_const(token)
                 record = self.code_generator.activations.get_current_activation()
 
-                if self.is_returning:
-                    record.return_value = Address(token).set_immediate()
+                # if self.is_returning:
+                #     record.return_value = Address(token).set_immediate()
         elif (
             token0 in self.follow_sets["Factor_zegond"]
             or token1 in self.follow_sets["Factor_zegond"]
@@ -2041,8 +2044,6 @@ class Parser:
                             address = record.get_variable_address(token1)
 
                         self.code_generator.semantic_stack.push(address)
-                        if self.is_returning:
-                            record.return_value = address
 
                 self.transition_diagram_b(node)
         elif (
@@ -2263,6 +2264,10 @@ class Parser:
                 self.transition_diagram_expression(node)
                 if not self.match_token(";", node):
                     self.error("missing ;")
+
+                record = self.code_generator.activations.get_current_activation()
+                if self.is_returning:
+                    record.return_value = self.code_generator.semantic_stack.pop()
                 self.is_returning = False
         elif (
             token0 in self.follow_sets["Return_stmt_prime"]

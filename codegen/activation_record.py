@@ -90,3 +90,20 @@ class ActivationRecord:
 
     def __eq__(self, other):
         return self.__str__() == other.__str__()
+
+    def set_all_equal_to_another(self, other: "ActivationRecord"):
+        self.name = other.name
+        self.start_address = other.start_address
+        self.caller = other.caller
+        self.variables = other.variables
+        self.parameters = other.parameters
+        self.temp_variables = other.temp_variables
+        self.return_value = other.return_value
+        self.return_address = other.return_address
+        self.return_type = other.return_type
+        self.return_value_address = other.return_value_address
+        self.last_var_address = other.last_var_address
+        self.last_temp_address = other.last_temp_address
+        self.start_line = other.start_line
+        self.last_line = other.last_line
+        return self

@@ -3,6 +3,7 @@ from .pb import ProgramBlock
 from .stack import Stack
 from .abstracts import Address, OPERATION
 from .activations import Activations
+from .activation_record import ActivationRecord
 
 
 class CodeGenerator:
@@ -231,6 +232,10 @@ class CodeGenerator:
             return
 
         record = self.activations.get_activation(function_to_call)
+        # record = ActivationRecord("sample", None, None)
+        # record = record.set_all_equal_to_another(record_origin)
+        # self.activations.push_activation(record)
+
         record.caller = self.activations.get_activation(caller_func)
 
         i = 0
