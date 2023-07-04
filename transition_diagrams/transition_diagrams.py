@@ -110,6 +110,11 @@ class Parser:
         ):
             self.transition_diagram_declaration(parent=node)
             self.transition_diagram_declaration_list(parent=node)
+
+            a = self.code_generator.semantic_stack.pop()
+            while a != "vars":
+                a = self.code_generator.semantic_stack.pop()
+
         elif (
             token0 in self.follow_sets["Declaration_list"]
             or token1 in self.follow_sets["Declaration_list"]
@@ -335,7 +340,7 @@ class Parser:
                 record.add_variable(token, address)
                 self.code_generator.semantic_stack.push(address)
 
-                self.code_generator.assign_zero(is_array=True, array_size=size)
+                self.code_generator.assign_zero(is_array=True, array_size=size, record=record)
         elif (
             token0 in self.follow_sets["Var_declaration_prime"]
             or token1 in self.follow_sets["Var_declaration_prime"]
@@ -415,7 +420,7 @@ class Parser:
                 )
                 self.code_generator.activations.push_activation(record)
 
-                for param in params[::-1]:
+                for param in params:
                     record.add_parameter(param)
 
                 if self.func_name == "main":

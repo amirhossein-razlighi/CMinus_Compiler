@@ -63,13 +63,13 @@ class CodeGenerator:
         self.semantic_stack.push("=")
         self.semantic_stack.push(target)
 
-    def assign_zero(self, is_array=False, array_size=None):
+    def assign_zero(self, is_array=False, array_size=None, record=None):
         target = self.semantic_stack.pop()
         self.program_block.create_entity(OPERATION.ASSIGN, 0, target)
         if is_array:
             for i in range(array_size - 1):
                 self.program_block.create_entity(
-                    OPERATION.ASSIGN, 0, self.program_block.get_new_address()
+                    OPERATION.ASSIGN, 0, Address(target + (i + 1) * 4)
                 )
 
     def push_const(self, const):
@@ -170,14 +170,24 @@ class CodeGenerator:
     def array_access(self):
         index = self.semantic_stack.pop()
         array_start_address = self.semantic_stack.pop()
+        is_main = self.activations.get_current_activation().name == "main"
+
         if isinstance(index, Address):
             tmp_1 = self.program_block.get_new_temp_address()
             self.program_block.create_entity(OPERATION.MUL, index, 4, tmp_1)
-            # try:
-            self.program_block.create_entity(
-                OPERATION.ADD, "#" + str(array_start_address.address), tmp_1, tmp_1
-            )
-            self.semantic_stack.push(Address(tmp_1).set_indirect())
+            if is_main:
+                self.program_block.create_entity(
+                    OPERATION.ADD, "#" + str(array_start_address.address), tmp_1, tmp_1
+                )
+                self.semantic_stack.push(Address(tmp_1).set_indirect())
+            else:
+                self.program_block.create_entity(
+                    OPERATION.ADD,
+                    Address(array_start_address.address).set_direct(),
+                    tmp_1,
+                    tmp_1,
+                )
+                self.semantic_stack.push(Address(tmp_1).set_indirect())
 
         else:
             self.semantic_stack.push(
@@ -187,6 +197,9 @@ class CodeGenerator:
     def until(self):
         condition = self.semantic_stack.pop()
         where_to_go = self.semantic_stack.pop()
+
+        while where_to_go == "vars" or where_to_go == "args" or where_to_go == "params":
+            where_to_go = self.semantic_stack.pop()
 
         self.program_block.create_entity(
             OPERATION.JPF,
@@ -219,12 +232,6 @@ class CodeGenerator:
 
         record = self.activations.get_activation(function_to_call)
         record.caller = self.activations.get_activation(caller_func)
-        self.program_block.PB_Entity.PB[record.last_line] = {
-            "operation": OPERATION.JP,
-            "operand1": self.program_block.PB_Entity.get_current_line_number() + 2,
-            "operand2": None,
-            "operand3": None,
-        }
 
         i = 0
         lst = list(record.parameters.values())
@@ -251,6 +258,12 @@ class CodeGenerator:
             Address(self.program_block.PB_Entity.get_current_line_number())
         )
         self.semantic_stack.push(record.return_value)
+        self.program_block.PB_Entity.PB[record.last_line] = {
+            "operation": OPERATION.JP,
+            "operand1": self.program_block.PB_Entity.get_current_line_number() - 1,
+            "operand2": None,
+            "operand3": None,
+        }
 
     def return_to_caller(self, record):
         self.program_block.create_entity(OPERATION.JP, None)
