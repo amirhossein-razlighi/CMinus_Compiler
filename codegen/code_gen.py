@@ -1,6 +1,6 @@
 from typing import Optional
 from .pb import ProgramBlock
-from .stack import Stack
+from .Stack import Stack
 from .abstracts import Address, OPERATION
 from .activations import Activations
 from .activation_record import ActivationRecord
