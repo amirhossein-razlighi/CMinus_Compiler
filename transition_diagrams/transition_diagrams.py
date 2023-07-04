@@ -411,7 +411,9 @@ class Parser:
 
                 # Action: create activation record
                 record = AR(
-                    self.func_name, self.code_generator.get_new_function_address(), None
+                    self.func_name,
+                    self.code_generator.get_new_function_address(),
+                    self.code_generator.activations.get_activation("global_global"),
                 )
                 record.start_line = (
                     self.code_generator.program_block.PB_Entity.get_current_line_number()
@@ -888,7 +890,6 @@ class Parser:
                 ):
                     self.code_generator.semantic_stack.pop()
                     self.code_generator.semantic_stack.pop()
-                    
 
                 if not self.match_token(";", node):
                     self.error(f"missing ;")
@@ -1928,7 +1929,7 @@ class Parser:
                 self.transition_diagram_args(parent=node)
                 if not self.match_token(")", node):
                     self.error(f"missing )")
-                
+
                 if self.calling_function:
                     self.code_generator.call(self.function_to_call, self.func_name)
 

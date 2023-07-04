@@ -142,7 +142,7 @@ class CodeGenerator:
                 "operand3": None,
             }
         main_record = self.activations.get_activation("main")
-        global_record = self.activations.get_activation("global")
+        global_record = self.activations.get_activation("global_global")
         main_record.caller = global_record
 
     def jpf(self):
