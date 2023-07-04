@@ -1,32 +1,39 @@
-/*==== Sample 10 =====*/
-int my_dummy_func (int my_var){
-	int my_var;
-	my_var = 1;
-    return my_var;
+/* === Test Case 8 === */
+int arr[3];
+int global;
+
+int foo(int arr[], int param) {
+	if (arr[1] == 0) {
+		return param + 100;
+	} else {
+		return global + 200;
+	} 
+}
+
+void changeglobal(int param) {
+	if (param < 5) {
+		global = 3;
+		return;
+	} else {
+		5;
+	} 
+	global = 6;
+}
+
+void main(void) {
+	int global;
+	int arr1[4];
+    int m;
 	
+	changeglobal(5);
+	global = 1;
+	arr1[1] = 1;
+	arr[1] = 0;
+    m = foo(arr1, 7);
+	output(m);  
+	
+	changeglobal(4);
+	
+	output(foo(arr1, 7));  
+	output(foo(arr, 7));  
 }
-
-int my_func(int my_var){
-	int a;
-	a = 30;
-	output(my_var);
-	if(a -30 < my_var+2){
-		return 1;
-	}
-	else {
-		return my_var + 3;
-	}
-}
-void main ( void )
-{
-	int m;
-    int n;
-	m = my_func (4) ;
-	output(m);
-	m = my_func (m);
-	output(m);
-	n = my_func (m);
-	output (m);
-	output(n);
-}
-

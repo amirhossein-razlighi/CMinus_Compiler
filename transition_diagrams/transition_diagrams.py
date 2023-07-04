@@ -23,6 +23,9 @@ class Parser:
         self.function_to_call = None
         self.calling_function = False
         self.is_returning = False
+        self.for_returns = []
+        self.main_is_made = False
+        self.main_address = None
 
     def parse(self):
         # call get next token for the first time
@@ -387,6 +390,14 @@ class Parser:
             or token1 in self.first_sets["Fun_declaration_prime"]
         ):
             if token1 == "(":
+                if not self.main_is_made:
+                    self.main_is_made = True
+                    self.code_generator.program_block.create_entity(OPERATION.JP, None)
+                    self.main_address = (
+                        self.code_generator.program_block.PB_Entity.get_current_line_number()
+                        - 1
+                    )
+
                 # Action: push params
                 self.code_generator.push_id("params")
 
@@ -411,7 +422,9 @@ class Parser:
 
                 # Action: create activation record
                 record = AR(
-                    self.func_name, self.code_generator.get_new_function_address(), None
+                    self.func_name,
+                    self.code_generator.get_new_function_address(),
+                    self.code_generator.activations.get_activation("global_global"),
                 )
                 record.start_line = (
                     self.code_generator.program_block.PB_Entity.get_current_line_number()
@@ -426,7 +439,7 @@ class Parser:
                     record.add_parameter(param)
 
                 if self.func_name == "main":
-                    self.code_generator.main_jp()
+                    self.code_generator.main_jp(self.main_address)
 
                 self.transition_diagram_compound_stmt(parent=node)
 
@@ -888,7 +901,6 @@ class Parser:
                 ):
                     self.code_generator.semantic_stack.pop()
                     self.code_generator.semantic_stack.pop()
-                    
 
                 if not self.match_token(";", node):
                     self.error(f"missing ;")
@@ -1013,8 +1025,11 @@ class Parser:
 
                 # Action: call
                 if self.calling_function:
-                    self.code_generator.call(self.function_to_call, self.func_name)
+                    self.code_generator.call(
+                        self.function_to_call, self.func_name, self.for_returns
+                    )
                     self.calling_function = False
+                    self.for_returns = []
         elif (
             token0 in self.follow_sets["Factor_prime"]
             or token1 in self.follow_sets["Factor_prime"]
@@ -1928,9 +1943,13 @@ class Parser:
                 self.transition_diagram_args(parent=node)
                 if not self.match_token(")", node):
                     self.error(f"missing )")
-                
+
                 if self.calling_function:
-                    self.code_generator.call(self.function_to_call, self.func_name)
+                    self.code_generator.call(
+                        self.function_to_call, self.func_name, self.for_returns
+                    )
+                    self.calling_function = False
+                    self.for_returns = []
 
             else:
                 self.transition_diagram_var_prime(parent=node)
@@ -2266,6 +2285,10 @@ class Parser:
         ):
             if token1 == ";":
                 self.match_token(";", node)
+                self.code_generator.program_block.create_entity(OPERATION.JP, None)
+                self.for_returns.append(
+                    self.code_generator.program_block.PB_Entity.get_current_line_number()
+                )
                 self.is_returning = False
             elif (
                 token0 in self.first_sets["Expression"]
@@ -2285,6 +2308,10 @@ class Parser:
                         OPERATION.ASSIGN,
                         self.code_generator.semantic_stack.pop(),
                         record.return_address,
+                    )
+                    self.code_generator.program_block.create_entity(OPERATION.JP, None)
+                    self.for_returns.append(
+                        self.code_generator.program_block.PB_Entity.get_current_line_number()
                     )
 
                 self.is_returning = False
