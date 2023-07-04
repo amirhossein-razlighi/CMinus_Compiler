@@ -1068,10 +1068,7 @@ class Parser:
                 token = int(token)  # float
                 # Action: PID (const)
                 self.code_generator.push_const(token)
-                # record = self.code_generator.activations.get_current_activation()
 
-                # if self.is_returning:
-                #     record.return_value = Address(token).set_immediate()
         elif (
             token0 in self.follow_sets["Factor_zegond"]
             or token1 in self.follow_sets["Factor_zegond"]
@@ -1864,6 +1861,7 @@ class Parser:
                 # Action: PID
                 record = self.code_generator.activations.get_current_activation()
                 is_param = token1 in record.parameters
+
                 if is_param:
                     address = record.get_parameter_address(token1)
                 else:
@@ -2037,6 +2035,9 @@ class Parser:
                             self.code_generator.activations.get_current_activation()
                         )
                         is_param = token1 in record.parameters
+                        print("TOKEEEEEEN")
+                        print(token1, is_param, record)
+
                         if is_param:
                             address = record.get_parameter_address(token1)
                         else:

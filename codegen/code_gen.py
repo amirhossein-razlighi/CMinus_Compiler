@@ -141,6 +141,9 @@ class CodeGenerator:
                 "operand2": None,
                 "operand3": None,
             }
+        main_record = self.activations.get_activation("main")
+        global_record = self.activations.get_activation("global")
+        main_record.caller = global_record
 
     def jpf(self):
         self.program_block.PB_Entity.PB[self.semantic_stack.pop()] = {

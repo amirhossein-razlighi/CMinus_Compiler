@@ -29,7 +29,9 @@ class ActivationRecord:
     def add_variable(self, name, address: Address = None):
         if name not in self.variables:
             if address is None:
-                address = self.get_new_address()
+                address = self.caller.get_variable_address(name)
+                if address is None:
+                    address = self.get_new_address()
             self.variables[name] = address
         return self.variables[name]
 
