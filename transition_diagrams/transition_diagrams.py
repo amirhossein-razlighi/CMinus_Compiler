@@ -888,6 +888,7 @@ class Parser:
                 ):
                     self.code_generator.semantic_stack.pop()
                     self.code_generator.semantic_stack.pop()
+                    
 
                 if not self.match_token(";", node):
                     self.error(f"missing ;")
@@ -1859,15 +1860,22 @@ class Parser:
                     self.error(f"missing )")
             elif self.match_token("ID", node):
                 # Action: PID
-                record = self.code_generator.activations.get_current_activation()
-                is_param = token1 in record.parameters
-
-                if is_param:
-                    address = record.get_parameter_address(token1)
+                if (
+                    sample := self.code_generator.activations.get_activation(token1)
+                    is not None
+                ):
+                    self.calling_function = True
+                    self.function_to_call = token1
                 else:
-                    address = record.get_variable_address(token1)
+                    record = self.code_generator.activations.get_current_activation()
+                    is_param = token1 in record.parameters
 
-                self.code_generator.semantic_stack.push(address)
+                    if is_param:
+                        address = record.get_parameter_address(token1)
+                    else:
+                        address = record.get_variable_address(token1)
+
+                    self.code_generator.semantic_stack.push(address)
 
                 self.transition_diagram_var_call_prime(parent=node)
             elif self.match_token("NUM", node):
@@ -1920,6 +1928,10 @@ class Parser:
                 self.transition_diagram_args(parent=node)
                 if not self.match_token(")", node):
                     self.error(f"missing )")
+                
+                if self.calling_function:
+                    self.code_generator.call(self.function_to_call, self.func_name)
+
             else:
                 self.transition_diagram_var_prime(parent=node)
         elif (
@@ -2035,8 +2047,6 @@ class Parser:
                             self.code_generator.activations.get_current_activation()
                         )
                         is_param = token1 in record.parameters
-                        print("TOKEEEEEEN")
-                        print(token1, is_param, record)
 
                         if is_param:
                             address = record.get_parameter_address(token1)
