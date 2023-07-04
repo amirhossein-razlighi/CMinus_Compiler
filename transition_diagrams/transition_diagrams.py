@@ -23,6 +23,7 @@ class Parser:
         self.function_to_call = None
         self.calling_function = False
         self.is_returning = False
+        self.main_address = None
 
     def parse(self):
         # call get next token for the first time
@@ -409,6 +410,13 @@ class Parser:
 
                 self.func_name = self.code_generator.semantic_stack.pop()
 
+                if self.main_address is None:
+                    self.code_generator.program_block.create_entity(None, None)
+                    self.main_address = (
+                        self.code_generator.program_block.PB_Entity.get_current_line_number() - 1
+                    )
+                    print(self.main_address)
+
                 # Action: create activation record
                 record = AR(
                     self.func_name,
@@ -428,7 +436,7 @@ class Parser:
                     record.add_parameter(param)
 
                 if self.func_name == "main":
-                    self.code_generator.main_jp()
+                    self.code_generator.main_jp(self.main_address)
 
                 self.transition_diagram_compound_stmt(parent=node)
 

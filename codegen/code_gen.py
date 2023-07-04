@@ -20,8 +20,6 @@ class CodeGenerator:
         self.program_block = ProgramBlock.get_instance()
         # for phase 3
         self.program_block.create_entity(OPERATION.ASSIGN, 4, Address(0))
-        self.save_address()
-        self.program_block.create_entity(OPERATION.JP, None)
 
         self.token_to_address = {}
         self.loop_stack = []
@@ -132,10 +130,10 @@ class CodeGenerator:
             "operand3": None,
         }
 
-    def main_jp(self):
+    def main_jp(self, main_address):
         a = self.semantic_stack.pop()
-        if self.program_block.PB_Entity.PB[2]["operand1"] is None:
-            self.program_block.PB_Entity.PB[2] = {
+        if self.program_block.PB_Entity.PB[main_address]["operand1"] is None:
+            self.program_block.PB_Entity.PB[main_address] = {
                 "operation": OPERATION.JP,
                 "operand1": self.program_block.PB_Entity.get_current_line_number(),
                 "operand2": None,
