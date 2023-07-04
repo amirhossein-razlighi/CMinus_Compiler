@@ -23,5 +23,10 @@ void main ( void )
     int n;
 	m = my_func (4) ;
 	output(m);
+	m = my_func (m);
+	output(m);
+	n = my_func (m);
+	output (m);
+	output(n);
 }
 

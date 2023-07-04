@@ -254,12 +254,20 @@ class CodeGenerator:
                 )
             i += 1
 
+        if record.jump_address is None:
+            record.jump_address = record.get_new_address()
+
+        self.program_block.create_entity(
+            OPERATION.ASSIGN,
+            self.program_block.PB_Entity.get_current_line_number() + 2,
+            record.jump_address,
+        )
         self.program_block.create_entity(OPERATION.JP, record.start_line, None)
         self.program_block.create_entity(None, None)
 
         self.program_block.PB_Entity.PB[record.last_line] = {
             "operation": OPERATION.JP,
-            "operand1": self.program_block.PB_Entity.get_current_line_number() - 1,
+            "operand1": Address(record.jump_address.address).set_indirect(),
             "operand2": None,
             "operand3": None,
         }
