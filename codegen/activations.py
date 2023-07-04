@@ -14,7 +14,7 @@ class Activations:
     def __init__(self):
         self.start_address_of_funcs = {}
         self.start_address_of_main = None
-        self.activations_stack = [AR("global_global", Address(0 - 99))]
+        self.activations_stack = [AR("global", Address(0 - 99))]
 
     def add_func(self, name, start_address: Address):
         self.start_address_of_funcs[name] = start_address

@@ -20,6 +20,8 @@ class CodeGenerator:
         self.program_block = ProgramBlock.get_instance()
         # for phase 3
         self.program_block.create_entity(OPERATION.ASSIGN, 4, Address(0))
+        self.save_address()
+        self.program_block.create_entity(OPERATION.JP, None)
 
         self.token_to_address = {}
         self.loop_stack = []
@@ -130,18 +132,17 @@ class CodeGenerator:
             "operand3": None,
         }
 
-    def main_jp(self, main_address):
+    def main_jp(self):
         a = self.semantic_stack.pop()
-
-        if self.program_block.PB_Entity.PB[main_address]["operand1"] is None:
-            self.program_block.PB_Entity.PB[main_address] = {
+        if self.program_block.PB_Entity.PB[2]["operand1"] is None:
+            self.program_block.PB_Entity.PB[2] = {
                 "operation": OPERATION.JP,
                 "operand1": self.program_block.PB_Entity.get_current_line_number(),
                 "operand2": None,
                 "operand3": None,
             }
         main_record = self.activations.get_activation("main")
-        global_record = self.activations.get_activation("global_global")
+        global_record = self.activations.get_activation("global")
         main_record.caller = global_record
 
     def jpf(self):
@@ -173,8 +174,7 @@ class CodeGenerator:
     def array_access(self):
         index = self.semantic_stack.pop()
         array_start_address = self.semantic_stack.pop()
-        record = self.activations.get_current_activation()
-        is_main = record.name == "main"
+        is_main = self.activations.get_current_activation().name == "main"
 
         if isinstance(index, Address):
             tmp_1 = self.program_block.get_new_temp_address()
@@ -194,19 +194,9 @@ class CodeGenerator:
                 self.semantic_stack.push(Address(tmp_1).set_indirect())
 
         else:
-            if is_main:
-                self.semantic_stack.push(
-                    Address(array_start_address.address + int(index * 4))
-                )
-            else:
-                tmp_address = self.program_block.get_new_temp_address()
-                self.program_block.create_entity(
-                    OPERATION.ADD,
-                    Address(array_start_address.address).set_direct(),
-                    index * 4,
-                    tmp_address,
-                )
-                self.semantic_stack.push(Address(tmp_address).set_indirect())
+            self.semantic_stack.push(
+                Address(array_start_address.address + int(index * 4))
+            )
 
     def until(self):
         condition = self.semantic_stack.pop()
@@ -240,11 +230,12 @@ class CodeGenerator:
         self.func_address += 400
         return self.func_address
 
-    def call(self, function_to_call, caller_func, for_return_list=None):
+    def call(self, function_to_call, caller_func):
         if function_to_call == None:
             return
 
         record = self.activations.get_activation(function_to_call)
+
         record.caller = self.activations.get_activation(caller_func)
 
         i = 0
@@ -284,22 +275,13 @@ class CodeGenerator:
             "operand3": None,
         }
 
-        # if for_return_list is not None:
-        #     for item in for_return_list:
-        #         self.program_block.PB_Entity.PB[item] = {
-        #             "operation": OPERATION.JP,
-        #             "operand1": Address(record.last_line),
-        #             "operand2": None,
-        #             "operand3": None,
-        #         }
-
         self.semantic_stack.push(record.return_address)
         if record.return_address is None:
             record.return_address = record.get_new_address()
 
     def return_to_caller(self, record):
-        record.last_line = self.program_block.PB_Entity.get_current_line_number() - 1
         self.program_block.create_entity(OPERATION.JP, None)
+        record.last_line = self.program_block.PB_Entity.get_current_line_number() - 1
 
     @staticmethod
     def debug(self, name_of_caller):
