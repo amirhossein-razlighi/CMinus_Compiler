@@ -260,17 +260,21 @@ Program
 │               │               │   │               │   ├── Statement
 │               │               │   │               │   │   └── Expression-stmt
 │               │               │   │               │   │       ├── Expression
-│               │               │   │               │   │       │   └── Simple-expression-zegond
-│               │               │   │               │   │       │       ├── Additive-expression-zegond
-│               │               │   │               │   │       │       │   ├── Term-zegond
-│               │               │   │               │   │       │       │   │   ├── Factor-zegond
-│               │               │   │               │   │       │       │   │   │   └── (NUM, 5)
-│               │               │   │               │   │       │       │   │   └── G
-│               │               │   │               │   │       │       │   │       └── epsilon
-│               │               │   │               │   │       │       │   └── D
-│               │               │   │               │   │       │       │       └── epsilon
-│               │               │   │               │   │       │       └── C
-│               │               │   │               │   │       │           └── epsilon
+│               │               │   │               │   │       │   ├── (ID, global)
+│               │               │   │               │   │       │   └── B
+│               │               │   │               │   │       │       ├── (SYMBOL, =)
+│               │               │   │               │   │       │       └── Expression
+│               │               │   │               │   │       │           └── Simple-expression-zegond
+│               │               │   │               │   │       │               ├── Additive-expression-zegond
+│               │               │   │               │   │       │               │   ├── Term-zegond
+│               │               │   │               │   │       │               │   │   ├── Factor-zegond
+│               │               │   │               │   │       │               │   │   │   └── (NUM, 5)
+│               │               │   │               │   │       │               │   │   └── G
+│               │               │   │               │   │       │               │   │       └── epsilon
+│               │               │   │               │   │       │               │   └── D
+│               │               │   │               │   │       │               │       └── epsilon
+│               │               │   │               │   │       │               └── C
+│               │               │   │               │   │       │                   └── epsilon
 │               │               │   │               │   │       └── (SYMBOL, ;)
 │               │               │   │               │   └── Statement-list
 │               │               │   │               │       └── epsilon

@@ -15,7 +15,7 @@ void changeglobal(int param) {
 		global = 3;
 		return;
 	} else {
-		5;
+		global = 5;
 	} 
 	global = 6;
 }

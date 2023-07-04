@@ -172,10 +172,11 @@ class CodeGenerator:
     def array_access(self):
         index = self.semantic_stack.pop()
         array_start_address = self.semantic_stack.pop()
-        is_main = self.activations.get_current_activation().name == "main"
+        record = self.activations.get_current_activation()
+        is_main = record.name == "main"
 
         if isinstance(index, Address):
-            tmp_1 = self.program_block.get_new_temp_address()
+            tmp_1 = record.get_new_temp_address()
             self.program_block.create_entity(OPERATION.MUL, index, 4, tmp_1)
             if is_main:
                 self.program_block.create_entity(
@@ -192,9 +193,19 @@ class CodeGenerator:
                 self.semantic_stack.push(Address(tmp_1).set_indirect())
 
         else:
-            self.semantic_stack.push(
-                Address(array_start_address.address + int(index * 4))
-            )
+            tmp_1 = record.get_new_temp_address()
+            if is_main:
+                self.semantic_stack.push(
+                    Address(array_start_address.address + int(index * 4))
+                )
+            else:
+                self.program_block.create_entity(
+                    OPERATION.ADD,
+                    Address(array_start_address.address).set_direct(),
+                    index * 4,
+                    tmp_1,
+                )
+                self.semantic_stack.push(Address(tmp_1).set_indirect())
 
     def until(self):
         condition = self.semantic_stack.pop()
