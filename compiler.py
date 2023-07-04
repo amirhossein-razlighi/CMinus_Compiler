@@ -69,6 +69,12 @@ def save_code_gen_result(file_address: str, parser: Parser):
                 if operation.value != "JP":
                     operand1 = convert_address(operand1)
 
+            if operand1 == None and operation.value == "JP":
+                operand1 = (
+                    parser.code_generator.program_block.PB_Entity.get_current_line_number()
+                    + 2
+                )
+
             print(operand1, ",", end=" ", file=f)
             if operand2 != None:
                 operand2 = convert_address(operand2)

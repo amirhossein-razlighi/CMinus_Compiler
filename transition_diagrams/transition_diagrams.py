@@ -3,6 +3,7 @@ from anytree import Node, RenderTree
 import sys
 from codegen.code_gen import CodeGenerator
 from codegen.activation_record import ActivationRecord as AR
+from codegen.abstracts import Address, OPERATION
 
 
 class Parser:
@@ -21,6 +22,7 @@ class Parser:
         self.func_name = None
         self.function_to_call = None
         self.calling_function = False
+        self.is_returning = False
 
     def parse(self):
         # call get next token for the first time
@@ -386,6 +388,20 @@ class Parser:
                 if not self.match_token(")", node):
                     self.error(f"missing )")
 
+                params = []
+                # Action: add params to activation record
+                while True:
+                    param = self.code_generator.semantic_stack.pop()
+                    if param == "void":
+                        continue
+
+                    if param == "params":
+                        break
+
+                    params.append(param)
+
+                self.func_name = self.code_generator.semantic_stack.pop()
+
                 # Action: create activation record
                 record = AR(
                     self.func_name, self.code_generator.get_new_function_address(), None
@@ -399,22 +415,8 @@ class Parser:
                 )
                 self.code_generator.activations.push_activation(record)
 
-                # Action: add params to activation record
-                while True:
-                    param = self.code_generator.semantic_stack.pop()
-                    if param == "void" or param == "params":
-                        continue
-
-                    if param == self.func_name:
-                        break
-
+                for param in params[::-1]:
                     record.add_parameter(param)
-
-                while (peek := self.code_generator.semantic_stack.peek()) in [
-                    "vars",
-                    "params",
-                ]:
-                    self.code_generator.semantic_stack.pop()
 
                 if self.func_name == "main":
                     self.code_generator.main_jp()
@@ -1059,6 +1061,10 @@ class Parser:
                 token = int(token)  # float
                 # Action: PID (const)
                 self.code_generator.push_const(token)
+                record = self.code_generator.activations.get_current_activation()
+
+                if self.is_returning:
+                    record.return_value = Address(token).set_immediate()
         elif (
             token0 in self.follow_sets["Factor_zegond"]
             or token1 in self.follow_sets["Factor_zegond"]
@@ -1849,7 +1855,7 @@ class Parser:
                     self.error(f"missing )")
             elif self.match_token("ID", node):
                 # Action: PID
-                record = self.code_generator.get_current_activation()
+                record = self.code_generator.activations.get_current_activation()
                 is_param = token1 in record.parameters
                 if is_param:
                     address = record.get_parameter_address(token1)
@@ -2030,6 +2036,8 @@ class Parser:
                             address = record.get_variable_address(token1)
 
                         self.code_generator.semantic_stack.push(address)
+                        if self.is_returning:
+                            record.return_value = address
 
                 self.transition_diagram_b(node)
         elif (
@@ -2197,6 +2205,7 @@ class Parser:
         ):
             if token1 == "return":
                 self.match_token("return", node)
+                self.is_returning = True
                 self.transition_diagram_return_stmt_prime(node)
         elif (
             token0 in self.follow_sets["Return_stmt"]
@@ -2241,6 +2250,7 @@ class Parser:
         ):
             if token1 == ";":
                 self.match_token(";", node)
+                self.is_returning = False
             elif (
                 token0 in self.first_sets["Expression"]
                 or token1 in self.first_sets["Expression"]
@@ -2248,6 +2258,7 @@ class Parser:
                 self.transition_diagram_expression(node)
                 if not self.match_token(";", node):
                     self.error("missing ;")
+                self.is_returning = False
         elif (
             token0 in self.follow_sets["Return_stmt_prime"]
             or token1 in self.follow_sets["Return_stmt_prime"]

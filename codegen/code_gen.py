@@ -104,6 +104,10 @@ class CodeGenerator:
 
     def jpf_save_address(self):
         a = self.semantic_stack.pop()
+        while a != "vars":
+            a = self.semantic_stack.pop()
+        a = self.semantic_stack.pop()
+
         self.program_block.PB_Entity.PB[a] = {
             "operation": OPERATION.JPF,
             "operand1": self.semantic_stack.pop(),
@@ -116,6 +120,10 @@ class CodeGenerator:
     def jp(self):
         a = self.semantic_stack.pop()
 
+        while a != "vars":
+            a = self.semantic_stack.pop()
+        a = self.semantic_stack.pop()
+
         self.program_block.PB_Entity.PB[a] = {
             "operation": OPERATION.JP,
             "operand1": self.program_block.PB_Entity.get_current_line_number(),
@@ -125,14 +133,13 @@ class CodeGenerator:
 
     def main_jp(self):
         a = self.semantic_stack.pop()
-        if a == 1:
-            self.program_block.PB_Entity.PB[a] = {
+        if self.program_block.PB_Entity.PB[2]["operand1"] is None:
+            self.program_block.PB_Entity.PB[2] = {
                 "operation": OPERATION.JP,
                 "operand1": self.program_block.PB_Entity.get_current_line_number(),
                 "operand2": None,
                 "operand3": None,
             }
-        print("a", a)
 
     def jpf(self):
         self.program_block.PB_Entity.PB[self.semantic_stack.pop()] = {
@@ -166,10 +173,12 @@ class CodeGenerator:
         if isinstance(index, Address):
             tmp_1 = self.program_block.get_new_temp_address()
             self.program_block.create_entity(OPERATION.MUL, index, 4, tmp_1)
+            # try:
             self.program_block.create_entity(
                 OPERATION.ADD, "#" + str(array_start_address.address), tmp_1, tmp_1
             )
             self.semantic_stack.push(Address(tmp_1).set_indirect())
+
         else:
             self.semantic_stack.push(
                 Address(array_start_address.address + int(index * 4))
@@ -207,23 +216,33 @@ class CodeGenerator:
     def call(self, function_to_call, caller_func):
         if function_to_call == None:
             return
-        self.activations.get_activation(
-            function_to_call
-        ).caller = self.activations.get_activation(caller_func)
 
         record = self.activations.get_activation(function_to_call)
         record.caller = self.activations.get_activation(caller_func)
+        self.program_block.PB_Entity.PB[record.last_line] = {
+            "operation": OPERATION.JP,
+            "operand1": self.program_block.PB_Entity.get_current_line_number() + 2,
+            "operand2": None,
+            "operand3": None,
+        }
 
         i = 0
         lst = list(record.parameters.values())
         while (item := self.semantic_stack.pop()) != "args":
             param = lst[i]
 
-            self.program_block.create_entity(
-                OPERATION.ASSIGN,
-                Address(item).set_immediate(),
-                Address(param.address).set_direct(),
-            )
+            if isinstance(item, Address):
+                self.program_block.create_entity(
+                    OPERATION.ASSIGN,
+                    Address(item.address).set_immediate(),
+                    Address(param.address).set_direct(),
+                )
+            else:
+                self.program_block.create_entity(
+                    OPERATION.ASSIGN,
+                    item,
+                    Address(param.address).set_indirect(),
+                )
             i += 1
 
         self.program_block.create_entity(OPERATION.JP, record.start_line, None)
@@ -231,12 +250,12 @@ class CodeGenerator:
         record.set_return_address(
             Address(self.program_block.PB_Entity.get_current_line_number())
         )
+        self.semantic_stack.push(record.return_value)
 
     def return_to_caller(self, record):
-        # self.program_block.create_entity(OPERATION.JP, record.return_address)
-        # self.program_block.create_entity(None, None, None, record)
-        # TODO: debug
-        
+        self.program_block.create_entity(OPERATION.JP, None)
+        record.last_line = self.program_block.PB_Entity.get_current_line_number() - 1
+
     @staticmethod
     def debug(self, name_of_caller):
         print(name_of_caller)

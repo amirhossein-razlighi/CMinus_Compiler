@@ -1,18 +1,19 @@
-int a;
-
-int bye ( int alpha ) {
-    alpha = alpha - 5;
+/*==== Sample 2 =====*/
+int foo(int x){
+	int a;
+	a = 10;
+	output(x);
+	if(a < x){
+		return 1;
+	}
+	else {
+		return 2;
+	} 
+}
+void main ( void )
+{
+	int i;
+	i = foo (4) ;
+	output (i);
 }
 
-int hi( int a ) {
-    int y;
-    a = a + 1;
-    return a;
-}
-
-void main(void) {
-    int x;
-    x = 10;
-    output(x);
-    hi(x);
-}

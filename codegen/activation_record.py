@@ -16,6 +16,7 @@ class ActivationRecord:
         self.last_var_address = Address(100 - 4)
         self.last_temp_address = Address(500 - 4)
         self.start_line = None
+        self.last_line = None
 
     def add_parameter(self, name, address: Address = None):
         if name not in self.parameters:
