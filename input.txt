@@ -1,39 +1,36 @@
-/* === Test Case 8 === */
-int arr[3];
-int global;
-
-int foo(int arr[], int param) {
-	if (arr[1] == 0) {
-		return param + 100;
-	} else {
-		return global + 200;
-	} 
+/*===  Sample 3  === */
+void printArray(int A[], int size)
+{
+    int i;
+    i = 0;
+    if (i < size) {
+    repeat {
+        output(A[i]);
+        i = i + 1;
+    } until (size < i + 1)
+    } 
+    else {}
 }
 
-void changeglobal(int param) {
-	if (param < 5) {
-		global = 3;
-		return;
-	} else {
-		5;
+void main(void)
+{
+    int arr[20];
+    int arrsize;
+    int i;
+    int j;
+    arrsize = 20;
+    i = 0;
+    repeat {
+	j = 0 - 2;
+	arr[i] = 2;
+        if (j < i) {
+	repeat { 
+		arr[i] = arr[i] * (0 - 2);
+		j = j + 1;
+	} until (i < j + 1)
 	} 
-	global = 6;
-}
-
-void main(void) {
-	int global;
-	int arr1[4];
-    int m;
-	
-	changeglobal(5);
-	global = 1;
-	arr1[1] = 1;
-	arr[1] = 0;
-    m = foo(arr1, 7);
-	output(m);  
-	
-	changeglobal(4);
-	
-	output(foo(arr1, 7));  
-	output(foo(arr, 7));  
+    else {}
+	i = i + 1;
+    } until (arrsize < i + 1)
+    printArray(arr, arrsize);
 }

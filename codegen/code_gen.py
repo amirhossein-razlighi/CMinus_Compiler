@@ -176,9 +176,6 @@ class CodeGenerator:
         record = self.activations.get_current_activation()
         is_main = record.name == "main"
 
-        if not is_main:
-            print(self.semantic_stack.items, array_start_address, index)
-
         if isinstance(index, Address):
             tmp_1 = record.get_new_temp_address()
             self.program_block.create_entity(OPERATION.MUL, index, 4, tmp_1)
@@ -248,7 +245,7 @@ class CodeGenerator:
         self.program_block.create_entity(None, None)
 
     def get_new_function_address(self):
-        self.func_address += 400
+        self.func_address += 1000
         return self.func_address
 
     def call(self, function_to_call, caller_func):
