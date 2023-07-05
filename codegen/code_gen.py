@@ -262,11 +262,18 @@ class CodeGenerator:
             param = lst[i]
 
             if isinstance(item, Address):
-                self.program_block.create_entity(
-                    OPERATION.ASSIGN,
-                    Address(item.address).set_immediate(),
-                    Address(param.address).set_direct(),
-                )
+                if item.is_indirect:
+                    self.program_block.create_entity(
+                        OPERATION.ASSIGN,
+                        Address(item.address).set_direct(),
+                        Address(param.address).set_direct(),
+                    )
+                else:
+                    self.program_block.create_entity(
+                        OPERATION.ASSIGN,
+                        Address(item.address).set_immediate(),
+                        Address(param.address).set_direct(),
+                    )
             else:
                 self.program_block.create_entity(
                     OPERATION.ASSIGN,
@@ -306,6 +313,7 @@ class CodeGenerator:
             record.return_address = record.get_new_address()
 
         self.semantic_stack.push(record.return_address)
+        
 
     def return_to_caller(self, record):
         self.program_block.create_entity(OPERATION.JP, None)

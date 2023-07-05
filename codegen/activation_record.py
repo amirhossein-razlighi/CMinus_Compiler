@@ -19,6 +19,7 @@ class ActivationRecord:
         self.last_line = None
         self.jump_address = None
         self.for_returns = []
+        self.has_return_value = False
 
     def add_parameter(self, name, address: Address = None):
         if name not in self.parameters:

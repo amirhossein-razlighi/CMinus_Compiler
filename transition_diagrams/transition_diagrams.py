@@ -1126,6 +1126,17 @@ class Parser:
             if self.calling_function:
                 self.code_generator.call(self.function_to_call, self.func_name)
                 self.calling_function = False
+                record = self.code_generator.activations.get_activation(
+                    self.function_to_call
+                )
+                if record.has_return_value:
+                    tmp = record.get_new_temp_address()
+                    self.code_generator.program_block.create_entity(
+                        OPERATION.ASSIGN, self.code_generator.semantic_stack.pop(), tmp
+                    )
+                    self.code_generator.semantic_stack.push(tmp)
+                else:
+                    self.code_generator.semantic_stack.pop()
 
             # Action: Output
             if self.handle_output:
@@ -2290,11 +2301,10 @@ class Parser:
                     self.error("missing ;")
 
                 record = self.code_generator.activations.get_current_activation()
-
+                record.has_return_value = True
                 if self.is_returning:
                     if record.return_address is None:
                         record.return_address = record.get_new_address()
-
                     self.code_generator.program_block.create_entity(
                         OPERATION.ASSIGN,
                         self.code_generator.semantic_stack.pop(),
