@@ -413,9 +413,9 @@ class Parser:
                 if self.main_address is None:
                     self.code_generator.program_block.create_entity(None, None)
                     self.main_address = (
-                        self.code_generator.program_block.PB_Entity.get_current_line_number() - 1
+                        self.code_generator.program_block.PB_Entity.get_current_line_number()
+                        - 1
                     )
-                    print(self.main_address)
 
                 # Action: create activation record
                 record = AR(
@@ -2275,6 +2275,7 @@ class Parser:
         ):
             if token1 == ";":
                 self.match_token(";", node)
+                self.code_generator.return_()
                 self.is_returning = False
             elif (
                 token0 in self.first_sets["Expression"]
@@ -2295,7 +2296,7 @@ class Parser:
                         self.code_generator.semantic_stack.pop(),
                         record.return_address,
                     )
-
+                self.code_generator.return_()
                 self.is_returning = False
         elif (
             token0 in self.follow_sets["Return_stmt_prime"]

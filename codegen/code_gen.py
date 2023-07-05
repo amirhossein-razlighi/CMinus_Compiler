@@ -34,6 +34,7 @@ class CodeGenerator:
             raise Exception("Routine not found")
 
     def output(self):
+        print(self.semantic_stack)
         operand = self.semantic_stack.pop()
         self.program_block.create_entity(OPERATION.PRINT, operand)
 
@@ -284,6 +285,15 @@ class CodeGenerator:
             "operand3": None,
         }
 
+        # do the returns!
+        for item in record.for_returns:
+            self.program_block.PB_Entity.PB[item] = {
+                "operation": OPERATION.JP,
+                "operand1": record.last_line,
+                "operand2": None,
+                "operand3": None,
+            }
+
         self.semantic_stack.push(record.return_address)
         if record.return_address is None:
             record.return_address = record.get_new_address()
@@ -291,6 +301,13 @@ class CodeGenerator:
     def return_to_caller(self, record):
         self.program_block.create_entity(OPERATION.JP, None)
         record.last_line = self.program_block.PB_Entity.get_current_line_number() - 1
+
+    def return_(self):
+        self.program_block.create_entity(None, None)
+        record = self.activations.get_current_activation()
+        record.for_returns.append(
+            self.program_block.PB_Entity.get_current_line_number() - 1
+        )
 
     @staticmethod
     def debug(self, name_of_caller):

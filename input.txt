@@ -15,7 +15,7 @@ void changeglobal(int param) {
 		global = 3;
 		return;
 	} else {
-		global = 5;
+		5;
 	} 
 	global = 6;
 }
@@ -37,3 +37,6 @@ void main(void) {
 	output(foo(arr1, 7));  
 	output(foo(arr, 7));  
 }
+
+/* bug is in output(foo(arr1, 7)). generally, calling a function as an argument of another function should
+be handled */
