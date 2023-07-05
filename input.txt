@@ -37,6 +37,3 @@ void main(void) {
 	output(foo(arr1, 7));  
 	output(foo(arr, 7));  
 }
-
-/* bug is in output(foo(arr1, 7)). generally, calling a function as an argument of another function should
-be handled */

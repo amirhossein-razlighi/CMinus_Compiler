@@ -1021,9 +1021,9 @@ class Parser:
                     self.error(f"missing )")
 
                 # Action: call
-                if self.calling_function:
-                    self.code_generator.call(self.function_to_call, self.func_name)
-                    self.calling_function = False
+                # if self.calling_function:
+                #     self.code_generator.call(self.function_to_call, self.func_name)
+                #     self.calling_function = False
         elif (
             token0 in self.follow_sets["Factor_prime"]
             or token1 in self.follow_sets["Factor_prime"]
@@ -1122,10 +1122,14 @@ class Parser:
 
         if token0 in self.first_sets["Args"] or token1 in self.first_sets["Args"]:
             self.transition_diagram_arg_list(parent=node)
+            # Action: call
+            if self.calling_function:
+                self.code_generator.call(self.function_to_call, self.func_name)
+                self.calling_function = False
 
             # Action: Output
             if self.handle_output:
-                self.code_generator.output()
+                self.code_generator.output(self.func_name)
                 self.handle_output = False
 
         elif token0 in self.follow_sets["Args"] or token1 in self.follow_sets["Args"]:

@@ -33,9 +33,9 @@ class CodeGenerator:
         else:
             raise Exception("Routine not found")
 
-    def output(self):
-        print(self.semantic_stack)
+    def output(self, function_name=None):
         operand = self.semantic_stack.pop()
+        record = self.activations.get_activation(function_name)
         self.program_block.create_entity(OPERATION.PRINT, operand)
 
     def get_token_address(self, token):
@@ -176,6 +176,9 @@ class CodeGenerator:
         record = self.activations.get_current_activation()
         is_main = record.name == "main"
 
+        if not is_main:
+            print(self.semantic_stack.items, array_start_address, index)
+
         if isinstance(index, Address):
             tmp_1 = record.get_new_temp_address()
             self.program_block.create_entity(OPERATION.MUL, index, 4, tmp_1)
@@ -192,7 +195,6 @@ class CodeGenerator:
                     tmp_1,
                 )
                 self.semantic_stack.push(Address(tmp_1).set_indirect())
-
         else:
             tmp_1 = record.get_new_temp_address()
             if is_main:
@@ -200,13 +202,22 @@ class CodeGenerator:
                     Address(array_start_address.address + int(index * 4))
                 )
             else:
-                self.program_block.create_entity(
-                    OPERATION.ADD,
-                    Address(array_start_address.address).set_direct(),
-                    index * 4,
-                    tmp_1,
-                )
-                self.semantic_stack.push(Address(tmp_1).set_indirect())
+                if array_start_address in record.parameters.values():
+                    self.program_block.create_entity(
+                        OPERATION.ADD,
+                        Address(array_start_address.address).set_direct(),
+                        index * 4,
+                        tmp_1,
+                    )
+                    self.semantic_stack.push(Address(tmp_1).set_indirect())
+                else:
+                    self.program_block.create_entity(
+                        OPERATION.ADD,
+                        Address(array_start_address.address).set_immediate(),
+                        index * 4,
+                        tmp_1,
+                    )
+                    self.semantic_stack.push(Address(tmp_1).set_indirect())
 
     def until(self):
         condition = self.semantic_stack.pop()
