@@ -302,9 +302,10 @@ class CodeGenerator:
                 "operand3": None,
             }
 
-        self.semantic_stack.push(record.return_address)
         if record.return_address is None:
             record.return_address = record.get_new_address()
+
+        self.semantic_stack.push(record.return_address)
 
     def return_to_caller(self, record):
         self.program_block.create_entity(OPERATION.JP, None)

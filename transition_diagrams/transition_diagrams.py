@@ -2300,8 +2300,8 @@ class Parser:
                         self.code_generator.semantic_stack.pop(),
                         record.return_address,
                     )
-                self.code_generator.return_()
-                self.is_returning = False
+                    self.code_generator.return_()
+                    self.is_returning = False
         elif (
             token0 in self.follow_sets["Return_stmt_prime"]
             or token1 in self.follow_sets["Return_stmt_prime"]
