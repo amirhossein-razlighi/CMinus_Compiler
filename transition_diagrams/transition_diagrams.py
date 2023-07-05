@@ -901,6 +901,10 @@ class Parser:
 
                 if not self.match_token(";", node):
                     self.error(f"missing ;")
+                
+                if self.handle_output:
+                    self.code_generator.output()
+                    self.handle_output = False
 
             elif token1 == "break":
                 self.match_token("break", node)
@@ -1139,9 +1143,9 @@ class Parser:
                     self.code_generator.semantic_stack.pop()
 
             # Action: Output
-            if self.handle_output:
-                self.code_generator.output(self.func_name)
-                self.handle_output = False
+            # if self.handle_output:
+            #     self.code_generator.output(self.func_name)
+            #     self.handle_output = False
 
         elif token0 in self.follow_sets["Args"] or token1 in self.follow_sets["Args"]:
             if "epsilon" in self.first_sets["Args"]:

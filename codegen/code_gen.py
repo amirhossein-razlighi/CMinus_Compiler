@@ -35,7 +35,6 @@ class CodeGenerator:
 
     def output(self, function_name=None):
         operand = self.semantic_stack.pop()
-        record = self.activations.get_activation(function_name)
         self.program_block.create_entity(OPERATION.PRINT, operand)
 
     def get_token_address(self, token):
