@@ -1,0 +1,30 @@
+Running test in folder: ./tests/phase4_testcases/T1
+Test passed
+------------------------------
+Running test in folder: ./tests/phase4_testcases/T10
+Test passed
+------------------------------
+Running test in folder: ./tests/phase4_testcases/T2
+Test passed
+------------------------------
+Running test in folder: ./tests/phase4_testcases/T3
+Test passed
+------------------------------
+Running test in folder: ./tests/phase4_testcases/T4_C
+Test passed
+------------------------------
+Running test in folder: ./tests/phase4_testcases/T5
+Test passed
+------------------------------
+Running test in folder: ./tests/phase4_testcases/T6
+Test passed
+------------------------------
+Running test in folder: ./tests/phase4_testcases/T7
+Test passed
+------------------------------
+Running test in folder: ./tests/phase4_testcases/T8
+Test passed
+------------------------------
+Running test in folder: ./tests/phase4_testcases/T9
+Test passed
+------------------------------

@@ -236,6 +236,7 @@ class CodeGenerator:
                 "operand2": None,
                 "operand3": None,
             }
+        self.loop_stack = []
 
     def break_the_jail(self):
         self.loop_stack.append(
@@ -274,10 +275,17 @@ class CodeGenerator:
                         Address(param.address).set_direct(),
                     )
             else:
+                tmp = record.get_new_temp_address()
+
                 self.program_block.create_entity(
                     OPERATION.ASSIGN,
                     item,
-                    Address(param.address).set_indirect(),
+                    Address(tmp.address),
+                )
+                self.program_block.create_entity(
+                    OPERATION.ASSIGN,
+                    Address(tmp.address).set_immediate(),
+                    Address(param.address).set_direct(),
                 )
             i += 1
 
@@ -312,7 +320,6 @@ class CodeGenerator:
             record.return_address = record.get_new_address()
 
         self.semantic_stack.push(record.return_address)
-        
 
     def return_to_caller(self, record):
         self.program_block.create_entity(OPERATION.JP, None)
