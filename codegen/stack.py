@@ -2,23 +2,33 @@ from typing import Optional
 
 
 class Stack:
-    instance: Optional["Stack"] = None
 
+    @staticmethod
     def get_instance():
-        if Stack.instance is None:
-            Stack.instance = Stack()
-        return Stack.instance
+        return Stack()
 
-    def __init__(self):
+    def __init__(self, debug=False):
         self.items = []
+        self.dbg=debug
+        self.cnt =0
 
     def push(self, item):
+        if self.dbg:
+            self.cnt += 1
+            print(f"{self.cnt}\tpush {item}")
         self.items.append(item)
 
     def pop(self):
         if len(self.items) > 0:
-            return self.items.pop()
+            val = self.items.pop()
+            if self.dbg:
+                self.cnt +=1
+                print(f"{self.cnt}\tpop {val}")
+            return val
         else:
+            if self.dbg:
+                self.cnt+=1
+                print(f"{self.cnt}\tpop None")
             return None
 
     def peek(self):

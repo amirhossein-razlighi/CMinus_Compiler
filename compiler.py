@@ -31,6 +31,7 @@ def save_errors_to_file(file_address, errors):
     with open(file_address, "w") as f:
         if len(errors) == 0:
             f.write("There is no syntax error.")
+            return True
         else:
             for error in errors:
                 # Convert error to lowercase
@@ -39,6 +40,18 @@ def save_errors_to_file(file_address, errors):
                 # error_msg = error_msg[0].lower() + " " + error_msg[1]
                 error_str = "#" + str(error[0]) + " : syntax error, " + error_msg
                 f.write("{}\n".format(error_str))
+            return False
+
+
+def save_semantic_errors_to_file(file_address, errors):
+    with open(file_address, "w") as f:
+        if len(errors) == 0:
+            f.write("The input program is semantically correct.\n")
+            return True
+        else:
+            for error in errors:
+                f.write(f"{error}\n")
+            return False
 
 
 def convert_address(inp):
@@ -119,8 +132,21 @@ if __name__ == "__main__":
     # Save the parse tree to file
     save_parse_tree_to_file("./parse_tree.txt", parser.tree)
 
-    # Save the errors to file
-    save_errors_to_file("./syntax_errors.txt", parser.errors)
+    generate = True
 
-    # Save the code generation result to file
-    save_code_gen_result("./output.txt", parser)
+    # Save the errors to file
+    generate = generate and save_errors_to_file("./syntax_errors.txt", parser.errors)
+
+    # check if there are semantic errors
+    sem = save_semantic_errors_to_file("./semantic_errors.txt", 
+                                                         parser.semantic_analyzer.errors)
+
+    generate = generate and sem
+
+    # only generate code when there are no errors
+    if generate:
+        # Save the code generation result to file
+        save_code_gen_result("./output.txt", parser)
+    else:
+        with open("./output.txt", "w") as f:
+            f.write("The output code has not been generated.")

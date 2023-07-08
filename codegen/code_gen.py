@@ -1,7 +1,8 @@
 from typing import Optional
-from .pb import ProgramBlock
+from .PB import ProgramBlock
 from .stack import Stack
 from .abstracts import Address, OPERATION
+from semantic.semantic_analyzer import SemanticAnalyzer
 
 
 class CodeGenerator:
@@ -16,6 +17,7 @@ class CodeGenerator:
     def __init__(self):
         self.semantic_stack = Stack.get_instance()
         self.program_block = ProgramBlock.get_instance()
+        self.semantic_analyzer = SemanticAnalyzer.get_instance()
         # for phase 3
         self.program_block.create_entity(OPERATION.ASSIGN, 4, Address(0))
         self.save_address()
@@ -25,6 +27,7 @@ class CodeGenerator:
         self.loop_stack = []
 
     def run_routine(self, routine_name, params):
+        if self.semantic_analyzer.haserror(): return
         func_to_call = getattr(self, routine_name)
         if func_to_call is not None and callable(func_to_call):
             func_to_call(*params)
@@ -32,18 +35,22 @@ class CodeGenerator:
             raise Exception("Routine not found")
 
     def output(self):
+        if self.semantic_analyzer.haserror(): return
         operand = self.semantic_stack.pop()
         self.program_block.create_entity(OPERATION.PRINT, operand)
 
     def get_token_address(self, token):
+        if self.semantic_analyzer.haserror(): return
         if token not in self.token_to_address:
             self.token_to_address[token] = self.program_block.get_new_address()
         return self.token_to_address[token]
 
     def push_id(self, id):
+        if self.semantic_analyzer.haserror(): return
         self.semantic_stack.push(id)
 
     def assign(self, is_array=False, array_index=None):
+        if self.semantic_analyzer.haserror(): return
         source = self.semantic_stack.pop()
         target = self.semantic_stack.pop()
         if target == "=":
@@ -61,6 +68,7 @@ class CodeGenerator:
         self.semantic_stack.push(target)
 
     def assign_zero(self, is_array=False, array_size=None):
+        if self.semantic_analyzer.haserror(): return
         target = self.semantic_stack.pop()
         self.program_block.create_entity(OPERATION.ASSIGN, 0, target)
         if is_array:
@@ -70,9 +78,11 @@ class CodeGenerator:
                 )
 
     def push_const(self, const):
+        if self.semantic_analyzer.haserror(): return
         self.semantic_stack.push(const)
 
     def add(self):
+        if self.semantic_analyzer.haserror(): return
         operand2 = self.semantic_stack.pop()
         operand1 = self.semantic_stack.pop()
         sum_address = self.program_block.get_new_temp_address()
@@ -80,6 +90,7 @@ class CodeGenerator:
         self.program_block.create_entity(OPERATION.ADD, operand1, operand2, sum_address)
 
     def sub(self):
+        if self.semantic_analyzer.haserror(): return
         operand2 = self.semantic_stack.pop()
         operand1 = self.semantic_stack.pop()
         subtract_address = self.program_block.get_new_temp_address()
@@ -89,6 +100,7 @@ class CodeGenerator:
         )
 
     def mul(self):
+        if self.semantic_analyzer.haserror(): return
         operand2 = self.semantic_stack.pop()
         operand1 = self.semantic_stack.pop()
         mul_address = self.program_block.get_new_temp_address()
@@ -96,10 +108,12 @@ class CodeGenerator:
         self.program_block.create_entity(OPERATION.MUL, operand1, operand2, mul_address)
 
     def save_address(self):
+        if self.semantic_analyzer.haserror(): return
         self.semantic_stack.push(self.program_block.PB_Entity.get_current_line_number())
         self.program_block.create_entity(None, None)
 
     def jpf_save_address(self):
+        if self.semantic_analyzer.haserror(): return
         a = self.semantic_stack.pop()
         self.program_block.PB_Entity.PB[a] = {
             "operation": OPERATION.JPF,
@@ -112,6 +126,7 @@ class CodeGenerator:
 
 
     def jp(self):
+        if self.semantic_analyzer.haserror(): return
         a = self.semantic_stack.pop()
 
         self.program_block.PB_Entity.PB[a] = {
@@ -122,6 +137,7 @@ class CodeGenerator:
         }
 
     def main_jp(self):
+        if self.semantic_analyzer.haserror(): return
         a = self.semantic_stack.pop()
         if a == 1:
             self.program_block.PB_Entity.PB[a] = {
@@ -132,6 +148,7 @@ class CodeGenerator:
             }
 
     def jpf(self):
+        if self.semantic_analyzer.haserror(): return
         self.program_block.PB_Entity.PB[self.semantic_stack.pop()] = {
             "operation": OPERATION.JPF,
             "operand1": self.semantic_stack.pop(),
@@ -140,6 +157,7 @@ class CodeGenerator:
         }
 
     def less_than(self):
+        if self.semantic_analyzer.haserror(): return
         operand2 = self.semantic_stack.pop()
         operand1 = self.semantic_stack.pop()
         less_than_address = self.program_block.get_new_temp_address()
@@ -149,6 +167,7 @@ class CodeGenerator:
         )
 
     def equals(self):
+        if self.semantic_analyzer.haserror(): return
         operand2 = self.semantic_stack.pop()
         operand1 = self.semantic_stack.pop()
         equals_address = self.program_block.get_new_temp_address()
@@ -158,6 +177,7 @@ class CodeGenerator:
         )
 
     def array_access(self):
+        if self.semantic_analyzer.haserror(): return
         index = self.semantic_stack.pop()
         array_start_address = self.semantic_stack.pop()
         if isinstance(index, Address):
@@ -173,6 +193,7 @@ class CodeGenerator:
             )
 
     def until(self):
+        if self.semantic_analyzer.haserror(): return
         condition = self.semantic_stack.pop()
         where_to_go = self.semantic_stack.pop()
 
@@ -192,6 +213,7 @@ class CodeGenerator:
             }
 
     def break_the_jail(self):
+        if self.semantic_analyzer.haserror(): return
         self.loop_stack.append(
             self.program_block.PB_Entity.get_current_line_number() + 1
         )

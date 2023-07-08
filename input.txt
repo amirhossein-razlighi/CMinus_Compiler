@@ -1,26 +1,45 @@
-/*==== Sample T4 ====*/
-int a;
-int b;
+/*==== sample S5  ====*/
+
+int foo(int x){
+    int a;
+    int b;
+    int c[5];
+    int d[6];
+    void e;
+    a = 0;
+    b = a;
+    b = b + f;
+    
+    if(a == 2){
+        b = a + c;
+    } else {
+        g = x;
+        break;
+    }
+}
+
+int foo2(int a, int b){
+    int i;
+    int output1arr[10];
+    a = a + b;
+    i = 0;
+    repeat {
+        c = 10;
+        i = i + 1;
+    } until (i < 10)
+}
 
 void main(void) {
-    int c;
-    int d;
-    a = c = 1;
-    d = b = 3;
-    output(a);
-    output(b);
-    output(c * 3);
-    c = a * 17 < 15 + 3;
-    output(c * 0);
-    output(c);
-    output(d < 3);
-    output(d - 8 < 3);
-    output(1 * 2);
-    if(a < 2){
-	output(0-1);
-    }else {
-	output(0-2);
-    }
-
-
+    int i;
+    int x[10];
+    int a;
+    int b;
+    i = 0;
+    repeat {
+        output(k);
+        i = i + 1;
+    } until (i < 10)
+    
+    a = foo(x);
+    b = foo2(i);
 }

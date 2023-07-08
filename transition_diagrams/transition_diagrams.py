@@ -2,6 +2,7 @@ from scanner import Scanner
 from anytree import Node, RenderTree
 import sys
 from codegen.code_gen import CodeGenerator
+from semantic.semantic_analyzer import SemanticAnalyzer
 
 
 class Parser:
@@ -15,7 +16,9 @@ class Parser:
         self.tree = None
         self.grim = False
         self.code_generator = CodeGenerator.get_instance()
+        self.semantic_analyzer = SemanticAnalyzer.get_instance()
         self.routines_to_run = []
+        self.handle_output = None
 
     def parse(self):
         # call get next token for the first time
@@ -37,6 +40,7 @@ class Parser:
             return False
 
     def error(self, message):
+        # print(f"[{self.scanner.get_line_number()}] {message}")
         self.errors.append((self.scanner.get_line_number(), message))
 
     def transition_diagram_program(self):
@@ -198,6 +202,9 @@ class Parser:
             if not matched:
                 self.error(f"missing ID")
             else:
+                # Semantic:
+                self.semantic_analyzer.save_lexeme(token)
+
                 if not token == "main":
                     # Action: PID
                     self.code_generator.push_id(
@@ -300,6 +307,9 @@ class Parser:
             or token1 in self.first_sets["Var_declaration_prime"]
         ):
             if token1 == ";":
+                # Semantic:
+                self.semantic_analyzer.decl_var(self.scanner.get_line_number())
+
                 self.match_token(";", node)
 
                 # Action: assign_zero
@@ -308,10 +318,18 @@ class Parser:
             elif token1 == "[":
                 self.match_token("[", node)
                 size = int(self.scanner.get_current_token()[1])
+
+                # Semantic:
+                self.semantic_analyzer.save_array_argcnt(size)
+
                 if not self.match_token("NUM", node):
                     self.error(f"missing NUM")
                 if not self.match_token("]", node):
                     self.error(f"missing ]")
+
+                # Semantic:
+                self.semantic_analyzer.decl_arr(self.scanner.get_line_number())
+
                 if not self.match_token(";", node):
                     self.error(f"missing ;")
 
@@ -362,10 +380,23 @@ class Parser:
         ):
             if token1 == "(":
                 self.match_token("(", node)
+
+                # Semantic:
+                self.semantic_analyzer.skip_func()
+                self.semantic_analyzer.scope_up()
+
                 self.transition_diagram_params(parent=node)
                 if not self.match_token(")", node):
                     self.error(f"missing )")
+
+                # Semantic:
+                self.semantic_analyzer.decl_func(self.scanner.get_line_number())
+
                 self.transition_diagram_compound_stmt(parent=node)
+
+                # Semantic:
+                self.semantic_analyzer.scope_down()
+
         elif (
             token0 in self.follow_sets["Fun_declaration_prime"]
             or token1 in self.follow_sets["Fun_declaration_prime"]
@@ -409,8 +440,16 @@ class Parser:
             or token1 in self.first_sets["Type_specifier"]
         ):
             if token1 == "int":
+
+                # Semantic:
+                self.semantic_analyzer.save_type("int")
+
                 self.match_token("int", node)
             elif token1 == "void":
+
+                # Semantic:
+                self.semantic_analyzer.save_type("void")
+
                 self.match_token("void", node)
         elif (
             token0 in self.follow_sets["Type_specifier"]
@@ -453,12 +492,23 @@ class Parser:
         if token0 in self.first_sets["Params"] or token1 in self.first_sets["Params"]:
             if token1 == "int":
                 self.match_token("int", node)
+
+                # Semantic:
+                self.semantic_analyzer.save_type("int")
+
+                # Semantic:
+                _, token, _ = self.scanner.get_current_token()
+                self.semantic_analyzer.save_lexeme(token)
+
                 if not self.match_token("ID", node):
                     self.error(f"missing ID")
+
                 self.transition_diagram_param_prime(parent=node)
                 self.transition_diagram_param_list(parent=node)
             elif token1 == "void":
                 self.match_token("void", node)
+
+                # semantic
         elif (
             token0 in self.follow_sets["Params"] or token1 in self.follow_sets["Params"]
         ):
@@ -594,12 +644,20 @@ class Parser:
                 self.match_token("[", node)
                 if not self.match_token("]", node):
                     self.error(f"missing ]")
+
+            # Semantic:
+            self.semantic_analyzer.decl_arg_arr(self.scanner.get_line_number())
+
         elif (
             token0 in self.follow_sets["Param_prime"]
             or token1 in self.follow_sets["Param_prime"]
         ):
             if "epsilon" in self.first_sets["Param_prime"]:
                 Node("epsilon", node)
+
+                # Semantic:
+                self.semantic_analyzer.decl_arg_var(self.scanner.get_line_number())
+
                 return
             else:
                 # remove node from tree
@@ -741,7 +799,13 @@ class Parser:
                 token0 in self.first_sets["Compound_stmt"]
                 or token1 in self.first_sets["Compound_stmt"]
             ):
+                # Semantic:
+                self.semantic_analyzer.scope_up()
+
                 self.transition_diagram_compound_stmt(parent=node)
+
+                # Semantic:
+                self.semantic_analyzer.scope_down()
             elif (
                 token0 in self.first_sets["Selection_stmt"]
                 or token1 in self.first_sets["Selection_stmt"]
@@ -806,6 +870,9 @@ class Parser:
             ):
                 self.transition_diagram_expression(parent=node)
 
+                # Semantic:
+                self.semantic_analyzer.pop()
+
                 # Action: pop
                 if (
                     len(self.code_generator.semantic_stack.items) >= 2
@@ -818,6 +885,9 @@ class Parser:
                     self.error(f"missing ;")
 
             elif token1 == "break":
+                # Semantic:
+                self.semantic_analyzer.iter_check(self.scanner.get_line_number())
+
                 self.match_token("break", node)
                 if not self.match_token(";", node):
                     self.error(f"missing ;")
@@ -871,15 +941,27 @@ class Parser:
             or token1 in self.first_sets["B"]
         ):
             if token1 == "=":
+                # Semantic:
+                self.semantic_analyzer.correct()
+
                 self.match_token("=", node)
                 self.transition_diagram_expression(parent=node)
+
+                # Semantic:
+                self.semantic_analyzer.assert_same_type(self.scanner.get_line_number())
 
                 # Action: assign
                 self.code_generator.assign()
 
             elif token1 == "[":
+                # Semantic:
+                self.semantic_analyzer.correct()
+                self.semantic_analyzer.assert_type_array(self.scanner.get_line_number())
+
                 self.match_token("[", node)
                 self.transition_diagram_expression(parent=node)
+                # Semantic:
+                self.semantic_analyzer.assert_type_int(self.scanner.get_line_number())
                 if not self.match_token("]", node):
                     self.error(f"missing ]")
 
@@ -931,7 +1013,12 @@ class Parser:
         ):
             if token1 == "(":
                 self.match_token("(", node)
+                # Semantic:
+                self.semantic_analyzer.type_check_func(self.scanner.get_line_number())
+                self.semantic_analyzer.arg_check_begin()
                 self.transition_diagram_args(parent=node)
+                # Semantic: TODO:
+                self.semantic_analyzer.arg_check_end(self.scanner.get_line_number())
                 if not self.match_token(")", node):
                     self.error(f"missing )")
         elif (
@@ -940,6 +1027,8 @@ class Parser:
         ):
             if "epsilon" in self.first_sets["Factor_prime"]:
                 Node("epsilon", node)
+                # Semantic:
+                self.semantic_analyzer.correct()
                 return
             else:
                 # remove node from tree
@@ -983,6 +1072,8 @@ class Parser:
                 if not self.match_token(")", node):
                     self.error(f"missing )")
             elif token0 == "NUM":
+                # Semantic:
+                self.semantic_analyzer.push_type_int()
                 _, token, _ = self.scanner.get_current_token()
                 self.match_token("NUM", node)
                 token = int(token)  # float
@@ -1168,6 +1259,8 @@ class Parser:
             if token1 == "=":
                 self.match_token("=", node)
                 self.transition_diagram_expression(parent=node)
+                # Semantic:
+                self.semantic_analyzer.assert_same_type(self.scanner.get_line_number())
                 # Action: assign
                 self.code_generator.assign()
             else:
@@ -1302,6 +1395,9 @@ class Parser:
 
             self.transition_diagram_relop(parent=node)
             self.transition_diagram_additive_expression(parent=node)
+
+            # Semantic:
+            self.semantic_analyzer.assert_same_type(self.scanner.get_line_number())
 
             # Action: ReLOP
             if is_lt:
@@ -1521,6 +1617,9 @@ class Parser:
             self.transition_diagram_addop(parent=node)
             self.transition_diagram_term(parent=node)
 
+            # Semantic:
+            self.semantic_analyzer.assert_same_type(self.scanner.get_line_number())
+
             # Action: ADD OR SUB
             if is_plus:
                 self.code_generator.add()
@@ -1731,6 +1830,9 @@ class Parser:
             if self.match_token("*", node):
                 self.transition_diagram_factor(parent=node)
 
+                # Semantic:
+                self.semantic_analyzer.assert_same_type(self.scanner.get_line_number())
+
                 # Action: MUL
                 self.code_generator.mul()
 
@@ -1774,12 +1876,19 @@ class Parser:
                 if not self.match_token(")", node):
                     self.error(f"missing )")
             elif self.match_token("ID", node):
+                # Semantic:
+                self.semantic_analyzer.save_lexeme(token1)
+                self.semantic_analyzer.scope_check(token1, self.scanner.get_line_number())
                 # Action: PID
                 self.code_generator.push_id(
                     self.code_generator.get_token_address(token1)
                 )
                 self.transition_diagram_var_call_prime(parent=node)
+                # Semantic: TODO:
+                self.semantic_analyzer.finish_func()
             elif self.match_token("NUM", node):
+                # Semantic:
+                self.semantic_analyzer.push_type_int()
                 # Action: PID (const)
                 self.code_generator.push_const(token1)
                 pass
@@ -1826,10 +1935,17 @@ class Parser:
             or token1 in self.first_sets["Var_call_prime"]
         ):
             if self.match_token("(", node):
+                # Semantic:
+                self.semantic_analyzer.type_check_func(self.scanner.get_line_number())
+                self.semantic_analyzer.arg_check_begin()
                 self.transition_diagram_args(parent=node)
+                # Semantic: TODO:
+                self.semantic_analyzer.arg_check_end(self.scanner.get_line_number())
                 if not self.match_token(")", node):
                     self.error(f"missing )")
             else:
+                # Semantic:
+                self.semantic_analyzer.correct()
                 self.transition_diagram_var_prime(parent=node)
         elif (
             token0 in self.follow_sets["Var_call_prime"]
@@ -1837,6 +1953,8 @@ class Parser:
         ):
             if "epsilon" in self.first_sets["Var_call_prime"]:
                 Node("epsilon", node)
+                # Semantic:
+                self.semantic_analyzer.correct()
                 return
             else:
                 # remove node from tree
@@ -1873,7 +1991,11 @@ class Parser:
             or token1 in self.first_sets["Var_prime"]
         ):
             if self.match_token("[", node):
+                # Semantic:
+                self.semantic_analyzer.assert_type_array(self.scanner.get_line_number())
                 self.transition_diagram_expression(parent=node)
+                # Semantic:
+                self. semantic_analyzer.assert_type_int(self.scanner.get_line_number())
                 if not self.match_token("]", node):
                     self.error(f"missing ]")
 
@@ -1930,6 +2052,10 @@ class Parser:
                 _, token, _ = self.scanner.get_current_token()
                 self.match_token("ID", node)
 
+                # Semantic:
+                self.semantic_analyzer.save_lexeme(token)
+                self.semantic_analyzer.scope_check(token, self.scanner.get_line_number())
+
                 if token == "output":
                     self.handle_output = True
                 else:
@@ -1984,6 +2110,10 @@ class Parser:
                 if not self.match_token("(", node):
                     self.error("missing (")
                 self.transition_diagram_expression(node)
+                # Semantic:
+                self.semantic_analyzer.assert_type_int(self.scanner.get_line_number())
+                self.semantic_analyzer.pop()
+
                 if not self.match_token(")", node):
                     self.error("missing )")
 
@@ -2049,12 +2179,22 @@ class Parser:
                 self.code_generator.program_block.create_entity(None, None)
 
                 self.match_token("repeat", node)
+                # Semantic:
+                self.semantic_analyzer.iter_up()
+
                 self.transition_diagram_statement(node)
+                # Semantic:
+                self.semantic_analyzer.iter_down()
+
                 if not self.match_token("until", node):
                     self.error("missing until")
                 if not self.match_token("(", node):
                     self.error("missing (")
                 self.transition_diagram_expression(node)
+                # Semantic:
+                self.semantic_analyzer.assert_type_int(self.scanner.get_line_number())
+                self.semantic_analyzer.pop()
+
                 if not self.match_token(")", node):
                     self.error("missing )")
 
@@ -2152,6 +2292,10 @@ class Parser:
                 or token1 in self.first_sets["Expression"]
             ):
                 self.transition_diagram_expression(node)
+                # Semantic:
+                self.semantic_analyzer.assert_type_int(self.scanner.get_line_number())
+                self.semantic_analyzer.pop()
+
                 if not self.match_token(";", node):
                     self.error("missing ;")
         elif (

@@ -2,75 +2,76 @@ Program  Declaration_list
 Declaration_list  Declaration Declaration_list
 Declaration_list  
 Declaration  Declaration_initial Declaration_prime
-Declaration_initial  Type_specifier ID
+Declaration_initial  Type_specifier ID @save_lexeme
 Declaration_prime  Fun_declaration_prime
 Declaration_prime  Var_declaration_prime
-Var_declaration_prime  ;
-Var_declaration_prime  [ NUM ] ;
-Fun_declaration_prime  ( Params ) Compound_stmt
-Type_specifier  int
-Type_specifier  void
-Params  int ID Param_prime Param_list
+Var_declaration_prime  @decl_var ;
+Var_declaration_prime  [ NUM @save_array_argcnt ] @decl_arr ;
+Fun_declaration_prime  @skip_func ( @scope_up Params ) @decl_func Compound_stmt @scope_down
+Type_specifier  int @save_type
+Type_specifier  void @save_type
+Params  int @save_type ID @save_lexeme Param_prime Param_list
 Params  void
 Param_list  , Param Param_list
 Param_list  
 Param  Declaration_initial Param_prime
-Param_prime  [ ]
-Param_prime  
+Param_prime  [ ] @decl_arg_arr
+Param_prime  @decl_arg_var
 Compound_stmt  { Declaration_list Statement_list }
 Statement_list  Statement Statement_list
 Statement_list  
 Statement  Expression_stmt
-Statement  Compound_stmt
+Statement  @scope_up Compound_stmt @scope_down
 Statement  Selection_stmt
 Statement  Iteration_stmt
 Statement  Return_stmt
-Expression_stmt  Expression ;
-Expression_stmt  break ;
+Expression_stmt  Expression @pop;
+Expression_stmt  @iter_check break ;
 Expression_stmt  ;
-Selection_stmt  if ( Expression ) Statement else Statement
-Iteration_stmt  repeat Statement until ( Expression )
+Selection_stmt  if ( Expression @assert_type_int @pop ) Statement else Statement
+Iteration_stmt  repeat @iter_up Statement @iter_down until ( Expression @assert_type_int @pop )
 Return_stmt  return Return_stmt_prime
 Return_stmt_prime  ;
-Return_stmt_prime  Expression ;
+Return_stmt_prime  Expression @assert_type_int @pop ;
 Expression  Simple_expression_zegond
-Expression  ID B
-B  = Expression
-B  [ Expression ] H
+Expression  @save_lexeme @scope_check ID B
+B  @correct = Expression @assert_same_types
+B  @correct @assert_type_array [ Expression @assert_type_int ] H
 B  Simple_expression_prime
-H  = Expression
+H  = Expression @assert_same_types
 H  G D C
 Simple_expression_zegond  Additive_expression_zegond C
 Simple_expression_prime  Additive_expression_prime C
-C  Relop Additive_expression
+C  Relop Additive_expression @assert_same_types
 C  
 Relop  <
 Relop  ==
 Additive_expression  Term D
 Additive_expression_prime  Term_prime D
 Additive_expression_zegond  Term_zegond D
-D  Addop Term D
+D  Addop Term @assert_same_types D
 D  
 Addop +
+Addop -
 Addop  
 Term  Factor G
 Term_prime  Factor_prime G
 Term_zegond  Factor_zegond G
-G  * Factor G
+G  * Factor @assert_same_types G
 G  
 Factor  ( Expression )
-Factor  ID Var_call_prime
-Factor  NUM
-Var_call_prime  ( Args )
-Var_call_prime  Var_prime
-Var_prime  [ Expression ]
+Factor  @save_lexeme @scope_check ID Var_call_prime
+Factor  @push_type_int NUM
+Var_call_prime  @type_check_func ( @arg_check_begin Args @arg_check_end )
+Var_call_prime  @correct Var_prime
+Var_prime  @assert_type_array[ Expression @assert_type_int ]
 Var_prime  
-Factor_prime  ( Args )
-Factor_prime  
+Factor_prime  @type_check_func ( @arg_check_begin Args @arg_check_end)
+Factor_prime  @correct 
 Factor_zegond  ( Expression )
-Factor_zegond  NUM
+Factor_zegond  @push_type_int NUM
 Args  Arg_list
-Args  
+Args
 Arg_list  Expression Arg_list_prime
 Arg_list_prime  , Expression Arg_list_prime
 Arg_list_prime  
